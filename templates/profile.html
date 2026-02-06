@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+
+{% block title %}Profile - NEET/JEE Learning App{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h4>Profile Information</h4>
+            </div>
+            <div class="card-body">
+                <p><strong>Name:</strong> {{ user.name }}</p>
+                <p><strong>Email:</strong> {{ user.email }}</p>
+                <p><strong>Class:</strong> {{ user.class_level }}</p>
+                <p><strong>Stream:</strong> {{ user.stream }}</p>
+                <p><strong>Current Level:</strong> 
+                    <span class="badge bg-primary">{{ user.level }}</span>
+                </p>
+                <p><strong>Initial Test Score:</strong> {{ user.initial_test_score }}</p>
+                <p><strong>Member Since:</strong> {{ user['created_at'][:7] if user.get('created_at') else 'Recently' }}</p>
+            </div>
+        </div>
+        
+        {% if user.get('weak_topics') and user.weak_topics != '{}' %}
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5>Current Weak Areas</h5>
+            </div>
+            <div class="card-body">
+                <p class="text-muted">Weak areas will be identified after taking tests.</p>
+            </div>
+        </div>
+        {% endif %}
+        
+        {% if user.get('strong_topics') and user.strong_topics != '{}' %}
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5>Strong Areas</h5>
+            </div>
+            <div class="card-body">
+                <p class="text-muted">Strong areas will be identified after taking tests.</p>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h4>Test History</h4>
+            </div>
+            <div class="card-body">
+                {% if test_history %}
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Test Type</th>
+                                    <th>Score</th>
+                                    <th>Percentage</th>
+                                    <th>Time Taken</th>
+                                    <th>Subject Scores</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for test in test_history %}
+                                <tr>
+                                    <td>{{ test['created_at'][:10] }}</td>
+                                    <td>
+                                        <span class="badge bg-secondary">{{ test['test_type'].title() }}</span>
+                                    </td>
+                                    <td>{{ test['score'] }}/{{ test['total_questions'] }}</td>
+                                    <td>
+                                        {% set percentage = (test['score'] / test['total_questions'] * 100) %}
+                                        <span class="badge {% if percentage >= 80 %}bg-success{% elif percentage >= 60 %}bg-warning{% else %}bg-danger{% endif %}">
+                                            {{ "%.1f"|format(percentage) }}%
+                                        </span>
+                                    </td>
+                                    <td>{{ test['time_taken'] or 'N/A' }} min</td>
+                                    <td>
+                                        <small>Overall performance tracked</small>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p class="text-muted">No test history available. Take your first test to see your progress!</p>
+                    <a href="{{ url_for('initial_test') if user.initial_test_score == 0 else url_for('adaptive_test') }}" 
+                       class="btn btn-primary">
+                        {% if user.initial_test_score == 0 %}Take Initial Test{% else %}Take Adaptive Test{% endif %}
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+        
+        {% if test_history|length > 1 %}
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5>Performance Trends</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="performanceChart" width="400" height="200"></canvas>
+                <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+                <script>
+                    const ctx = document.getElementById('performanceChart').getContext('2d');
+                    const chart = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: [
+                                {% for test in test_history|reverse %}
+                                    '{{ test["created_at"][:5] if test.get("created_at") else loop.index }}'{% if not loop.last %},{% endif %}
+                                {% endfor %}
+                            ],
+                            datasets: [{
+                                label: 'Test Scores (%)',
+                                data: [
+                                    {% for test in test_history|reverse %}
+                                        {{ (test['score'] / test['total_questions'] * 100)|round(1) }}{% if not loop.last %},{% endif %}
+                                    {% endfor %}
+                                ],
+                                borderColor: 'rgb(75, 192, 192)',
+                                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                                tension: 0.1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    max: 100
+                                }
+                            }
+                        }
+                    });
+                </script>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

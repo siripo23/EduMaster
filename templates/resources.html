@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+
+{% block title %}Resources - NEET/JEE Learning App{% endblock %}
+
+{% block content %}
+<h2>Learning Resources for {{ current_user.stream }}</h2>
+
+<div class="row mt-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h4>📚 Textbooks</h4>
+            </div>
+            <div class="card-body">
+                {% if textbooks %}
+                    {% for textbook in textbooks %}
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <h6>{{ textbook.title }}</h6>
+                            <small class="text-muted">{{ textbook.subject }}
+                                {% if textbook.chapter %} - {{ textbook.chapter }}{% endif %}
+                            </small>
+                        </div>
+                        <a href="{{ textbook.file_path }}" class="btn btn-sm btn-primary" target="_blank">
+                            Download PDF
+                        </a>
+                    </div>
+                    <hr>
+                    {% endfor %}
+                {% else %}
+                    <p class="text-muted">No textbooks available yet. Check back later!</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h4>📝 Past Year Papers</h4>
+            </div>
+            <div class="card-body">
+                {% if past_papers %}
+                    {% for paper in past_papers %}
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <h6>{{ paper.title }}</h6>
+                            <small class="text-muted">{{ paper.subject }} - {{ paper.year }}
+                                {% if paper.chapter %} - {{ paper.chapter }}{% endif %}
+                            </small>
+                        </div>
+                        <a href="{{ paper.file_path }}" class="btn btn-sm btn-success" target="_blank">
+                            Download PDF
+                        </a>
+                    </div>
+                    <hr>
+                    {% endfor %}
+                {% else %}
+                    <p class="text-muted">No past papers available yet. Check back later!</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h4>🎯 Chapter-wise Practice</h4>
+            </div>
+            <div class="card-body">
+                <p>Practice specific chapters and topics based on your stream:</p>
+                
+                <div class="row">
+                    {% if current_user.stream == 'NEET' %}
+                        <div class="col-md-4">
+                            <h5>Physics</h5>
+                            <ul class="list-unstyled">
+                                <li><a href="#" class="btn btn-sm btn-outline-primary mb-1">Mechanics</a></li>
+                                <li><a href="#" class="btn btn-sm btn-outline-primary mb-1">Thermodynamics</a></li>
+                                <li><a href="#" class="btn btn-sm btn-outline-primary mb-1">Optics</a></li>
+                                <li><a href="#" class="btn btn-sm btn-outline-primary mb-1">Electricity</a></li>
+                            </ul>
+                        </div>
+                        <div class="col-md-4">
+                            <h5>Chemistry</h5>
+                            <ul class="list-unstyled">
+                                <li><a href="#" class="btn btn-sm btn-outline-success mb-1">Organic Chemistry</a></li>
+                                <li><a href="#" class="btn btn-sm btn-outline-success mb-1">Inorganic Chemistry</a></li>
+                                <li><a href="#" class="btn btn-sm btn-outline-success mb-1">Physical Chemistry</a></li>
+                            </ul>
+                        </div>
+                        <div class="col-md-4">
+                            <h5>Biology</h5>
+                            <ul class="list-unstyled">
+                                <li><a href="#" class="btn btn-sm btn-outline-info mb-1">Cell Biology</a></li>
+                                <li><a href="#" class="btn btn-sm btn-outline-info mb-1">Genetics</a></li>
+                                <li><a href="#" class="btn btn-sm btn-outline-info mb-1">Ecology</a></li>
+                                <li><a href="#" class="btn btn-sm btn-outline-info mb-1">Human Physiology</a></li>
+                            </ul>
+                        </div>
+                    {% elif current_user.stream == 'JEE' %}
+                        <div class="col-md-4">
+                            <h5>Physics</h5>
+                            <ul class="list-unstyled">
+                                <li><a href="#" class="btn btn-sm btn-outline-primary mb-1">Mechanics</a></li>
+                                <li><a href="#" class="btn btn-sm btn-outline-primary mb-1">Thermodynamics</a></li>
+                                <li><a href="#" class="btn btn-sm btn-outline-primary mb-1">Waves & Optics</a></li>
+                                <li><a href="#" class="btn btn-sm btn-outline-primary mb-1">Electromagnetism</a></li>
+                            </ul>
+                        </div>
+                        <div class="col-md-4">
+                            <h5>Chemistry</h5>
+                            <ul class="list-unstyled">
+                                <li><a href="#" class="btn btn-sm btn-outline-success mb-1">Organic Chemistry</a></li>
+                                <li><a href="#" class="btn btn-sm btn-outline-success mb-1">Inorganic Chemistry</a></li>
+                                <li><a href="#" class="btn btn-sm btn-outline-success mb-1">Physical Chemistry</a></li>
+                            </ul>
+                        </div>
+                        <div class="col-md-4">
+                            <h5>Mathematics</h5>
+                            <ul class="list-unstyled">
+                                <li><a href="#" class="btn btn-sm btn-outline-warning mb-1">Calculus</a></li>
+                                <li><a href="#" class="btn btn-sm btn-outline-warning mb-1">Algebra</a></li>
+                                <li><a href="#" class="btn btn-sm btn-outline-warning mb-1">Coordinate Geometry</a></li>
+                                <li><a href="#" class="btn btn-sm btn-outline-warning mb-1">Trigonometry</a></li>
+                            </ul>
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="alert alert-info mt-3">
+                    <strong>Note:</strong> Chapter-wise tests will be available soon. These will help you practice specific topics and improve your weak areas.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

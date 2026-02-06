@@ -1,0 +1,241 @@
+{% extends "base.html" %}
+
+{% block title %}{{ test_type }} - NEET/JEE Learning App{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-9">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h2 style="color: #667eea; font-weight: 700;">{{ test_type }}</h2>
+                    <p class="text-muted">{{ questions|length }} questions • Answer all questions carefully</p>
+                </div>
+                <div id="timer" class="d-flex align-items-center">
+                    <i class="fas fa-clock me-2"></i>
+                    <span>00:00</span>
+                </div>
+            </div>
+            
+            <form method="POST" action="{{ url_for('submit_test') }}" id="testForm">
+                {% for question in questions %}
+                <div class="card question-card mb-4 {% if question.subject == 'Physics' %}physics-accent{% elif question.subject == 'Chemistry' %}chemistry-accent{% elif question.subject == 'Biology' %}biology-accent{% elif question.subject == 'Mathematics' %}mathematics-accent{% endif %}">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong>Question {{ loop.index }}</strong>
+                            <span class="badge bg-secondary ms-2">{{ question['subject'] }}</span>
+                            <span class="badge bg-info ms-1">{{ question['difficulty'] }}</span>
+                        </div>
+                        <small class="text-muted">{{ question['chapter'] }} • {{ question['topic'] }}</small>
+                    </div>
+                    <div class="card-body">
+                        <div class="question-text mb-4">
+                            <p class="fs-5 fw-medium">{{ question['question_text'] }}</p>
+                        </div>
+                        
+                        <div class="options">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="question_{{ question['id'] }}" id="q{{ question['id'] }}_a" value="A">
+                                <label class="form-check-label w-100" for="q{{ question['id'] }}_a">
+                                    <strong>A)</strong> {{ question['option_a'] }}
+                                </label>
+                            </div>
+                            
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="question_{{ question['id'] }}" id="q{{ question['id'] }}_b" value="B">
+                                <label class="form-check-label w-100" for="q{{ question['id'] }}_b">
+                                    <strong>B)</strong> {{ question['option_b'] }}
+                                </label>
+                            </div>
+                            
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="question_{{ question['id'] }}" id="q{{ question['id'] }}_c" value="C">
+                                <label class="form-check-label w-100" for="q{{ question['id'] }}_c">
+                                    <strong>C)</strong> {{ question['option_c'] }}
+                                </label>
+                            </div>
+                            
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="question_{{ question['id'] }}" id="q{{ question['id'] }}_d" value="D">
+                                <label class="form-check-label w-100" for="q{{ question['id'] }}_d">
+                                    <strong>D)</strong> {{ question['option_d'] }}
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+                
+                <div class="text-center mb-5">
+                    <button type="submit" class="btn btn-success btn-lg px-5" onclick="return confirm('Are you sure you want to submit the test? You cannot change your answers after submission.')">
+                        <i class="fas fa-paper-plane me-2"></i>
+                        Submit Test
+                    </button>
+                </div>
+            </form>
+        </div>
+        
+        <div class="col-lg-3">
+            <div class="card sticky-top" style="top: 2rem;">
+                <div class="card-header">
+                    <h5><i class="fas fa-list-ol me-2"></i>Question Navigator</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-2">
+                        {% for question in questions %}
+                        <div class="col-3">
+                            <button type="button" class="btn btn-outline-secondary question-nav w-100" 
+                                    data-question="{{ loop.index }}" onclick="scrollToQuestion({{ loop.index }})">
+                                {{ loop.index }}
+                            </button>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="mt-4">
+                        <div class="d-flex align-items-center mb-2">
+                            <div class="btn btn-outline-secondary btn-sm me-2" style="width: 25px; height: 25px; border-radius: 50%;"></div>
+                            <small class="text-muted">Not Attempted</small>
+                        </div>
+                        <div class="d-flex align-items-center mb-2">
+                            <div class="btn btn-success btn-sm me-2" style="width: 25px; height: 25px; border-radius: 50%;"></div>
+                            <small class="text-muted">Attempted</small>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4 p-3" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); border-radius: 10px; color: white;">
+                        <h6 class="mb-2"><i class="fas fa-lightbulb me-2"></i>Quick Tips</h6>
+                        <ul class="list-unstyled mb-0" style="font-size: 0.85rem;">
+                            <li>• Read questions carefully</li>
+                            <li>• Eliminate wrong options</li>
+                            <li>• Manage your time wisely</li>
+                            <li>• Review before submitting</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Floating Progress Button -->
+<button class="fab" onclick="scrollToTop()" title="Scroll to top">
+    <i class="fas fa-arrow-up"></i>
+</button>
+
+<script>
+let startTime = new Date();
+let timerInterval;
+
+function updateTimer() {
+    let currentTime = new Date();
+    let elapsed = Math.floor((currentTime - startTime) / 1000);
+    let minutes = Math.floor(elapsed / 60);
+    let seconds = elapsed % 60;
+    
+    document.querySelector('#timer span').textContent = 
+        `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+}
+
+function scrollToQuestion(questionNum) {
+    let questionCard = document.querySelectorAll('.question-card')[questionNum - 1];
+    questionCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function scrollToTop() {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function updateQuestionStatus() {
+    let questions = document.querySelectorAll('input[type="radio"]:checked');
+    let answeredQuestions = new Set();
+    
+    questions.forEach(function(radio) {
+        let questionId = radio.name.split('_')[1];
+        answeredQuestions.add(questionId);
+    });
+    
+    let navButtons = document.querySelectorAll('.question-nav');
+    let allRadios = document.querySelectorAll('input[type="radio"]');
+    
+    navButtons.forEach(function(button, index) {
+        let questionId = allRadios[index * 4].name.split('_')[1];
+        if (answeredQuestions.has(questionId)) {
+            button.classList.remove('btn-outline-secondary');
+            button.classList.add('btn-success', 'attempted');
+        } else {
+            button.classList.remove('btn-success', 'attempted');
+            button.classList.add('btn-outline-secondary');
+        }
+    });
+    
+    // Update progress
+    let progress = (answeredQuestions.size / navButtons.length) * 100;
+    updateProgress(progress);
+}
+
+function updateProgress(percentage) {
+    // You can add a progress bar here if needed
+    console.log(`Progress: ${percentage.toFixed(1)}%`);
+}
+
+// Start timer
+timerInterval = setInterval(updateTimer, 1000);
+
+// Update question status when radio buttons change
+document.addEventListener('change', function(e) {
+    if (e.target.type === 'radio') {
+        updateQuestionStatus();
+        
+        // Add visual feedback
+        let card = e.target.closest('.question-card');
+        card.style.borderLeftWidth = '6px';
+        card.style.borderLeftColor = '#28a745';
+    }
+});
+
+// Auto-save functionality
+setInterval(function() {
+    if (typeof(Storage) !== "undefined") {
+        let answers = {};
+        let radioButtons = document.querySelectorAll('input[type="radio"]:checked');
+        
+        radioButtons.forEach(function(radio) {
+            answers[radio.name] = radio.value;
+        });
+        
+        localStorage.setItem('testProgress', JSON.stringify({
+            answers: answers,
+            timestamp: new Date().toISOString()
+        }));
+    }
+}, 30000); // Save every 30 seconds
+
+// Load saved progress
+window.addEventListener('load', function() {
+    if (typeof(Storage) !== "undefined") {
+        let saved = localStorage.getItem('testProgress');
+        if (saved) {
+            let progress = JSON.parse(saved);
+            let savedDate = new Date(progress.timestamp);
+            let today = new Date();
+            
+            if (savedDate.toDateString() === today.toDateString()) {
+                for (let questionName in progress.answers) {
+                    let radio = document.querySelector(`input[name="${questionName}"][value="${progress.answers[questionName]}"]`);
+                    if (radio) {
+                        radio.checked = true;
+                    }
+                }
+                updateQuestionStatus();
+            }
+        }
+    }
+});
+
+// Clear progress on submit
+document.getElementById('testForm').addEventListener('submit', function() {
+    localStorage.removeItem('testProgress');
+});
+</script>
+{% endblock %}

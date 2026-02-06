@@ -1,0 +1,541 @@
+{% extends "base.html" %}
+
+{% block title %}Practice Tests - EduMaster{% endblock %}
+
+{% block content %}
+<div class="practice-container">
+    <div class="container">
+        <!-- Header -->
+        <div class="practice-header">
+            <h1 class="page-title">
+                <i class="fas fa-brain me-3"></i>Practice Tests
+            </h1>
+            <p class="page-subtitle">
+                Choose your test type and start practicing. All tests follow official {{ user['stream'] }} exam patterns with proper marking scheme.
+            </p>
+        </div>
+
+        <!-- Marking Scheme Info -->
+        <div class="marking-info">
+            <div class="info-card">
+                <div class="info-icon">
+                    <i class="fas fa-info-circle"></i>
+                </div>
+                <div class="info-content">
+                    <h4>Marking Scheme</h4>
+                    <div class="marking-details">
+                        <div class="marking-item correct">
+                            <i class="fas fa-check-circle"></i>
+                            <span>Correct Answer: <strong>+4 marks</strong></span>
+                        </div>
+                        <div class="marking-item wrong">
+                            <i class="fas fa-times-circle"></i>
+                            <span>Wrong Answer: <strong>-1 mark</strong></span>
+                        </div>
+                        <div class="marking-item unattempted">
+                            <i class="fas fa-minus-circle"></i>
+                            <span>Unattempted: <strong>0 marks</strong></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Test Options -->
+        <div class="test-options">
+            {% if user['stream'] == 'NEET' %}
+            <!-- NEET Tests -->
+            <div class="test-card full-test">
+                <div class="test-badge">Full Test</div>
+                <div class="test-icon">
+                    <i class="fas fa-clipboard-list"></i>
+                </div>
+                <div class="test-content">
+                    <h3>NEET Full Test</h3>
+                    <p>Complete exam simulation with official pattern</p>
+                    
+                    <div class="test-details">
+                        <div class="detail-item">
+                            <i class="fas fa-question-circle"></i>
+                            <span>180 Questions</span>
+                        </div>
+                        <div class="detail-item">
+                            <i class="fas fa-clock"></i>
+                            <span>180 Minutes (3 Hours)</span>
+                        </div>
+                        <div class="detail-item">
+                            <i class="fas fa-star"></i>
+                            <span>Max: 720 Marks</span>
+                        </div>
+                    </div>
+                    
+                    <div class="subject-distribution">
+                        <h5>Subject Distribution:</h5>
+                        <div class="subjects">
+                            <span class="subject-tag">Physics: 45Q</span>
+                            <span class="subject-tag">Chemistry: 45Q</span>
+                            <span class="subject-tag">Biology: 90Q</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="test-action">
+                    <a href="{{ url_for('start_test', test_type='neet_full') }}" class="btn btn-test-primary">
+                        <i class="fas fa-play me-2"></i>Start Full Test
+                    </a>
+                </div>
+            </div>
+
+            <div class="test-card practice-test">
+                <div class="test-badge">Practice</div>
+                <div class="test-icon">
+                    <i class="fas fa-dumbbell"></i>
+                </div>
+                <div class="test-content">
+                    <h3>NEET Practice Test</h3>
+                    <p>Quick practice session for daily preparation</p>
+                    
+                    <div class="test-details">
+                        <div class="detail-item">
+                            <i class="fas fa-question-circle"></i>
+                            <span>45 Questions</span>
+                        </div>
+                        <div class="detail-item">
+                            <i class="fas fa-clock"></i>
+                            <span>45 Minutes</span>
+                        </div>
+                        <div class="detail-item">
+                            <i class="fas fa-star"></i>
+                            <span>Max: 180 Marks</span>
+                        </div>
+                    </div>
+                    
+                    <div class="subject-distribution">
+                        <h5>Subject Distribution:</h5>
+                        <div class="subjects">
+                            <span class="subject-tag">Physics: 12Q</span>
+                            <span class="subject-tag">Chemistry: 11Q</span>
+                            <span class="subject-tag">Biology: 22Q</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="test-action">
+                    <a href="{{ url_for('start_test', test_type='neet_practice') }}" class="btn btn-test-secondary">
+                        <i class="fas fa-play me-2"></i>Start Practice
+                    </a>
+                </div>
+            </div>
+
+            {% else %}
+            <!-- JEE Tests -->
+            <div class="test-card full-test">
+                <div class="test-badge">Full Test</div>
+                <div class="test-icon">
+                    <i class="fas fa-clipboard-list"></i>
+                </div>
+                <div class="test-content">
+                    <h3>JEE Main Full Test</h3>
+                    <p>Complete exam simulation with official pattern</p>
+                    
+                    <div class="test-details">
+                        <div class="detail-item">
+                            <i class="fas fa-question-circle"></i>
+                            <span>75 Questions</span>
+                        </div>
+                        <div class="detail-item">
+                            <i class="fas fa-clock"></i>
+                            <span>180 Minutes (3 Hours)</span>
+                        </div>
+                        <div class="detail-item">
+                            <i class="fas fa-star"></i>
+                            <span>Max: 300 Marks</span>
+                        </div>
+                    </div>
+                    
+                    <div class="subject-distribution">
+                        <h5>Subject Distribution:</h5>
+                        <div class="subjects">
+                            <span class="subject-tag">Physics: 25Q</span>
+                            <span class="subject-tag">Chemistry: 25Q</span>
+                            <span class="subject-tag">Mathematics: 25Q</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="test-action">
+                    <a href="{{ url_for('start_test', test_type='jee_full') }}" class="btn btn-test-primary">
+                        <i class="fas fa-play me-2"></i>Start Full Test
+                    </a>
+                </div>
+            </div>
+
+            <div class="test-card practice-test">
+                <div class="test-badge">Practice</div>
+                <div class="test-icon">
+                    <i class="fas fa-dumbbell"></i>
+                </div>
+                <div class="test-content">
+                    <h3>JEE Practice Test</h3>
+                    <p>Quick practice session for daily preparation</p>
+                    
+                    <div class="test-details">
+                        <div class="detail-item">
+                            <i class="fas fa-question-circle"></i>
+                            <span>20 Questions</span>
+                        </div>
+                        <div class="detail-item">
+                            <i class="fas fa-clock"></i>
+                            <span>45 Minutes</span>
+                        </div>
+                        <div class="detail-item">
+                            <i class="fas fa-star"></i>
+                            <span>Max: 80 Marks</span>
+                        </div>
+                    </div>
+                    
+                    <div class="subject-distribution">
+                        <h5>Subject Distribution:</h5>
+                        <div class="subjects">
+                            <span class="subject-tag">Physics: 7Q</span>
+                            <span class="subject-tag">Chemistry: 7Q</span>
+                            <span class="subject-tag">Mathematics: 6Q</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="test-action">
+                    <a href="{{ url_for('start_test', test_type='jee_practice') }}" class="btn btn-test-secondary">
+                        <i class="fas fa-play me-2"></i>Start Practice
+                    </a>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Tips Section -->
+        <div class="tips-section">
+            <div class="tips-card">
+                <h4><i class="fas fa-lightbulb me-2"></i>Test Taking Tips</h4>
+                <ul class="tips-list">
+                    <li><i class="fas fa-check me-2"></i>Read each question carefully before answering</li>
+                    <li><i class="fas fa-check me-2"></i>Manage your time wisely - don't spend too long on one question</li>
+                    <li><i class="fas fa-check me-2"></i>Skip difficult questions and return to them later</li>
+                    <li><i class="fas fa-check me-2"></i>Remember: Wrong answers have negative marking (-1 mark)</li>
+                    <li><i class="fas fa-check me-2"></i>Review your answers before submitting</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.practice-container {
+    min-height: 100vh;
+    background: var(--bg-primary);
+    padding: 2rem 0;
+}
+
+.practice-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.page-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+    font-family: 'Poppins', sans-serif;
+}
+
+.page-subtitle {
+    font-size: 1.2rem;
+    color: var(--text-secondary);
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+/* Marking Info */
+.marking-info {
+    margin-bottom: 3rem;
+}
+
+.info-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: var(--border-radius);
+    padding: 2rem;
+    color: white;
+    display: flex;
+    gap: 2rem;
+    align-items: center;
+    box-shadow: var(--shadow-lg);
+}
+
+.info-icon {
+    font-size: 3rem;
+    flex-shrink: 0;
+}
+
+.info-content h4 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: white;
+}
+
+.marking-details {
+    display: flex;
+    gap: 2rem;
+    flex-wrap: wrap;
+}
+
+.marking-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.1rem;
+}
+
+.marking-item i {
+    font-size: 1.3rem;
+}
+
+.marking-item.correct i { color: #4ade80; }
+.marking-item.wrong i { color: #f87171; }
+.marking-item.unattempted i { color: #fbbf24; }
+
+/* Test Options */
+.test-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+    gap: 2rem;
+    margin-bottom: 3rem;
+}
+
+.test-card {
+    background: var(--bg-secondary);
+    border-radius: var(--border-radius-lg);
+    padding: 2.5rem;
+    box-shadow: var(--shadow-lg);
+    border: 2px solid var(--border-color);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.test-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 6px;
+}
+
+.full-test::before {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.practice-test::before {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+}
+
+.test-card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-xl);
+}
+
+.test-badge {
+    position: absolute;
+    top: 1.5rem;
+    right: 1.5rem;
+    background: rgba(102, 126, 234, 0.1);
+    color: #667eea;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.practice-test .test-badge {
+    background: rgba(79, 172, 254, 0.1);
+    color: #4facfe;
+}
+
+.test-icon {
+    font-size: 3rem;
+    color: #667eea;
+    margin-bottom: 1.5rem;
+}
+
+.practice-test .test-icon {
+    color: #4facfe;
+}
+
+.test-content h3 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+}
+
+.test-content p {
+    color: var(--text-secondary);
+    margin-bottom: 2rem;
+}
+
+.test-details {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    background: var(--bg-primary);
+    border-radius: var(--border-radius-sm);
+}
+
+.detail-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    font-size: 1.1rem;
+    color: var(--text-primary);
+    font-weight: 500;
+}
+
+.detail-item i {
+    color: #667eea;
+    font-size: 1.2rem;
+}
+
+.subject-distribution {
+    margin-bottom: 2rem;
+}
+
+.subject-distribution h5 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+}
+
+.subjects {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.subject-tag {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.test-action {
+    margin-top: 2rem;
+}
+
+.btn-test-primary {
+    background: var(--primary-gradient);
+    color: white;
+    padding: 1rem 2rem;
+    border-radius: 50px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    box-shadow: var(--shadow-md);
+    width: 100%;
+    justify-content: center;
+    font-size: 1.1rem;
+}
+
+.btn-test-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+    color: white;
+}
+
+.btn-test-secondary {
+    background: var(--success-gradient);
+    color: white;
+    padding: 1rem 2rem;
+    border-radius: 50px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    box-shadow: var(--shadow-md);
+    width: 100%;
+    justify-content: center;
+    font-size: 1.1rem;
+}
+
+.btn-test-secondary:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+    color: white;
+}
+
+/* Tips Section */
+.tips-section {
+    margin-top: 3rem;
+}
+
+.tips-card {
+    background: var(--bg-secondary);
+    border-radius: var(--border-radius);
+    padding: 2rem;
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--border-color);
+}
+
+.tips-card h4 {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 1.5rem;
+}
+
+.tips-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.tips-list li {
+    color: var(--text-secondary);
+    font-size: 1.05rem;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+}
+
+.tips-list li i {
+    color: #10b981;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .page-title {
+        font-size: 2rem;
+    }
+    
+    .test-options {
+        grid-template-columns: 1fr;
+    }
+    
+    .marking-details {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .info-card {
+        flex-direction: column;
+        text-align: center;
+    }
+}
+</style>
+{% endblock %}

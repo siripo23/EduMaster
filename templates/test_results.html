@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% block title %}Test Results - NEET/JEE Learning App{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header text-center">
+                <h3>{{ test_attempt.test_type.title() }} Test Results</h3>
+            </div>
+            <div class="card-body">
+                <div class="text-center mb-4">
+                    <h1 class="display-4 text-primary">{{ test_attempt.score }}/{{ test_attempt.total_questions }}</h1>
+                    <h4>{{ "%.1f"|format(analysis.overall_percentage) }}%</h4>
+                    <p class="text-muted">Time taken: {{ test_attempt.time_taken }} minutes</p>
+                </div>
+                
+                {% if test_attempt.test_type == 'initial' %}
+                <div class="alert alert-info text-center">
+                    <h5>Your Level: {{ current_user.level }}</h5>
+                    <p>Based on your performance, we've determined your current level. This will help us generate personalized tests for you.</p>
+                </div>
+                {% endif %}
+                
+                <div class="row">
+                    {% for subject, scores in analysis.subject_scores.items() %}
+                    <div class="col-md-4 mb-3">
+                        <div class="card">
+                            <div class="card-body text-center">
+                                <h5>{{ subject }}</h5>
+                                <div class="progress mb-2">
+                                    <div class="progress-bar" role="progressbar" 
+                                         style="width: {{ scores.percentage }}%"
+                                         aria-valuenow="{{ scores.percentage }}" 
+                                         aria-valuemin="0" aria-valuemax="100">
+                                    </div>
+                                </div>
+                                <p>{{ scores.score }}/{{ scores.total }} ({{ "%.1f"|format(scores.percentage) }}%)</p>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                {% if analysis.weak_topics %}
+                <div class="mt-4">
+                    <h5>Areas to Focus On:</h5>
+                    <div class="row">
+                        {% for subject, topics in analysis.weak_topics.items() %}
+                        <div class="col-md-6">
+                            <div class="card border-warning">
+                                <div class="card-header bg-warning">
+                                    <strong>{{ subject }}</strong>
+                                </div>
+                                <div class="card-body">
+                                    <ul class="list-unstyled">
+                                        {% for topic in topics %}
+                                        <li>• {{ topic }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+                
+                {% if analysis.strong_topics %}
+                <div class="mt-4">
+                    <h5>Your Strong Areas:</h5>
+                    <div class="row">
+                        {% for subject, topics in analysis.strong_topics.items() %}
+                        <div class="col-md-6">
+                            <div class="card border-success">
+                                <div class="card-header bg-success text-white">
+                                    <strong>{{ subject }}</strong>
+                                </div>
+                                <div class="card-body">
+                                    <ul class="list-unstyled">
+                                        {% for topic in topics %}
+                                        <li>• {{ topic }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+                
+                <div class="text-center mt-4">
+                    <a href="{{ url_for('dashboard') }}" class="btn btn-primary me-3">Back to Dashboard</a>
+                    {% if test_attempt.test_type != 'initial' %}
+                    <a href="{{ url_for('adaptive_test') }}" class="btn btn-success">Take Another Test</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
