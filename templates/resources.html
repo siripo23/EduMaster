@@ -3,138 +3,256 @@
 {% block title %}Resources - NEET/JEE Learning App{% endblock %}
 
 {% block content %}
-<h2>Learning Resources for {{ current_user.stream }}</h2>
+<div class="resources-container">
+    <div class="container">
+        <div class="page-header mb-5">
+            <h2><i class="fas fa-book-open me-3"></i>Learning Resources for {{ current_user.stream }}</h2>
+            <p class="text-muted">Access textbooks and past year question papers</p>
+        </div>
 
-<div class="row mt-4">
-    <div class="col-md-6">
-        <div class="card">
-            <div class="card-header">
-                <h4>📚 Textbooks</h4>
-            </div>
-            <div class="card-body">
-                {% if textbooks %}
-                    {% for textbook in textbooks %}
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <div>
-                            <h6>{{ textbook.title }}</h6>
-                            <small class="text-muted">{{ textbook.subject }}
-                                {% if textbook.chapter %} - {{ textbook.chapter }}{% endif %}
-                            </small>
-                        </div>
-                        <a href="{{ textbook.file_path }}" class="btn btn-sm btn-primary" target="_blank">
-                            Download PDF
-                        </a>
+        <div class="row g-4">
+            <div class="col-md-6">
+                <div class="resource-card">
+                    <div class="resource-header textbooks-header">
+                        <i class="fas fa-book"></i>
+                        <h4>Textbooks</h4>
                     </div>
-                    <hr>
-                    {% endfor %}
-                {% else %}
-                    <p class="text-muted">No textbooks available yet. Check back later!</p>
-                {% endif %}
+                    <div class="resource-body">
+                        {% if textbooks %}
+                            {% for textbook in textbooks %}
+                            <div class="resource-item">
+                                <div class="resource-info">
+                                    <h6>{{ textbook.title }}</h6>
+                                    <small class="text-muted">
+                                        {{ textbook.subject }}
+                                        {% if textbook.chapter %} - {{ textbook.chapter }}{% endif %}
+                                    </small>
+                                </div>
+                                <a href="{{ textbook.file_path }}" class="btn btn-download" download>
+                                    <i class="fas fa-download"></i>
+                                </a>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="empty-state">
+                                <i class="fas fa-book-open"></i>
+                                <p>No textbooks available yet.</p>
+                                <small>Check back later for study materials!</small>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="resource-card">
+                    <div class="resource-header papers-header">
+                        <i class="fas fa-file-alt"></i>
+                        <h4>Past Year Papers</h4>
+                    </div>
+                    <div class="resource-body">
+                        {% if past_papers %}
+                            {% for paper in past_papers %}
+                            <div class="resource-item">
+                                <div class="resource-info">
+                                    <h6>{{ paper.title }}</h6>
+                                    <small class="text-muted">
+                                        {% if paper.year %}{{ paper.year }}{% endif %}
+                                        {% if paper.subject %} - {{ paper.subject }}{% endif %}
+                                    </small>
+                                </div>
+                                <a href="{{ paper.file_path }}" class="btn btn-download" download>
+                                    <i class="fas fa-download"></i>
+                                </a>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="empty-state">
+                                <i class="fas fa-file-alt"></i>
+                                <p>No past papers available yet.</p>
+                                <small>Check back later for previous year questions!</small>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
             </div>
         </div>
     </div>
+</div>
+
+<style>
+.resources-container {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 50%, #fef3c7 100%);
+    padding: 3rem 0;
+}
+
+.page-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.page-header h2 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 0.5rem;
+}
+
+.page-header .text-muted {
+    font-size: 1.1rem;
+}
+
+.resource-card {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.resource-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.resource-header {
+    padding: 1.5rem 2rem;
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.textbooks-header {
+    background: linear-gradient(135deg, #a8c0ff 0%, #c5a3ff 100%);
+}
+
+.papers-header {
+    background: linear-gradient(135deg, #a8edea 0%, #d4f1f4 100%);
+}
+
+.resource-header i {
+    font-size: 1.5rem;
+}
+
+.resource-header h4 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.resource-body {
+    padding: 1.5rem;
+    max-height: 600px;
+    overflow-y: auto;
+}
+
+.resource-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background: #f8fafc;
+    border-radius: 12px;
+    margin-bottom: 1rem;
+    transition: all 0.3s ease;
+}
+
+.resource-item:hover {
+    background: #e2e8f0;
+    transform: translateX(4px);
+}
+
+.resource-item:last-child {
+    margin-bottom: 0;
+}
+
+.resource-info h6 {
+    margin: 0 0 0.25rem 0;
+    color: #1e293b;
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+.resource-info small {
+    color: #64748b;
+    font-size: 0.85rem;
+}
+
+.btn-download {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+}
+
+.btn-download:hover {
+    background: linear-gradient(135deg, #059669 0%, #047857 100%);
+    color: white;
+    transform: scale(1.05);
+}
+
+.empty-state {
+    text-align: center;
+    padding: 3rem 2rem;
+    color: #64748b;
+}
+
+.empty-state i {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+
+.empty-state p {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: #475569;
+}
+
+.empty-state small {
+    font-size: 0.9rem;
+}
+
+/* Scrollbar styling */
+.resource-body::-webkit-scrollbar {
+    width: 8px;
+}
+
+.resource-body::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 4px;
+}
+
+.resource-body::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+}
+
+.resource-body::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+@media (max-width: 768px) {
+    .page-header h2 {
+        font-size: 1.5rem;
+    }
     
-    <div class="col-md-6">
-        <div class="card">
-            <div class="card-header">
-                <h4>📝 Past Year Papers</h4>
-            </div>
-            <div class="card-body">
-                {% if past_papers %}
-                    {% for paper in past_papers %}
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <div>
-                            <h6>{{ paper.title }}</h6>
-                            <small class="text-muted">{{ paper.subject }} - {{ paper.year }}
-                                {% if paper.chapter %} - {{ paper.chapter }}{% endif %}
-                            </small>
-                        </div>
-                        <a href="{{ paper.file_path }}" class="btn btn-sm btn-success" target="_blank">
-                            Download PDF
-                        </a>
-                    </div>
-                    <hr>
-                    {% endfor %}
-                {% else %}
-                    <p class="text-muted">No past papers available yet. Check back later!</p>
-                {% endif %}
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="row mt-4">
-    <div class="col-12">
-        <div class="card">
-            <div class="card-header">
-                <h4>🎯 Chapter-wise Practice</h4>
-            </div>
-            <div class="card-body">
-                <p>Practice specific chapters and topics based on your stream:</p>
-                
-                <div class="row">
-                    {% if current_user.stream == 'NEET' %}
-                        <div class="col-md-4">
-                            <h5>Physics</h5>
-                            <ul class="list-unstyled">
-                                <li><a href="#" class="btn btn-sm btn-outline-primary mb-1">Mechanics</a></li>
-                                <li><a href="#" class="btn btn-sm btn-outline-primary mb-1">Thermodynamics</a></li>
-                                <li><a href="#" class="btn btn-sm btn-outline-primary mb-1">Optics</a></li>
-                                <li><a href="#" class="btn btn-sm btn-outline-primary mb-1">Electricity</a></li>
-                            </ul>
-                        </div>
-                        <div class="col-md-4">
-                            <h5>Chemistry</h5>
-                            <ul class="list-unstyled">
-                                <li><a href="#" class="btn btn-sm btn-outline-success mb-1">Organic Chemistry</a></li>
-                                <li><a href="#" class="btn btn-sm btn-outline-success mb-1">Inorganic Chemistry</a></li>
-                                <li><a href="#" class="btn btn-sm btn-outline-success mb-1">Physical Chemistry</a></li>
-                            </ul>
-                        </div>
-                        <div class="col-md-4">
-                            <h5>Biology</h5>
-                            <ul class="list-unstyled">
-                                <li><a href="#" class="btn btn-sm btn-outline-info mb-1">Cell Biology</a></li>
-                                <li><a href="#" class="btn btn-sm btn-outline-info mb-1">Genetics</a></li>
-                                <li><a href="#" class="btn btn-sm btn-outline-info mb-1">Ecology</a></li>
-                                <li><a href="#" class="btn btn-sm btn-outline-info mb-1">Human Physiology</a></li>
-                            </ul>
-                        </div>
-                    {% elif current_user.stream == 'JEE' %}
-                        <div class="col-md-4">
-                            <h5>Physics</h5>
-                            <ul class="list-unstyled">
-                                <li><a href="#" class="btn btn-sm btn-outline-primary mb-1">Mechanics</a></li>
-                                <li><a href="#" class="btn btn-sm btn-outline-primary mb-1">Thermodynamics</a></li>
-                                <li><a href="#" class="btn btn-sm btn-outline-primary mb-1">Waves & Optics</a></li>
-                                <li><a href="#" class="btn btn-sm btn-outline-primary mb-1">Electromagnetism</a></li>
-                            </ul>
-                        </div>
-                        <div class="col-md-4">
-                            <h5>Chemistry</h5>
-                            <ul class="list-unstyled">
-                                <li><a href="#" class="btn btn-sm btn-outline-success mb-1">Organic Chemistry</a></li>
-                                <li><a href="#" class="btn btn-sm btn-outline-success mb-1">Inorganic Chemistry</a></li>
-                                <li><a href="#" class="btn btn-sm btn-outline-success mb-1">Physical Chemistry</a></li>
-                            </ul>
-                        </div>
-                        <div class="col-md-4">
-                            <h5>Mathematics</h5>
-                            <ul class="list-unstyled">
-                                <li><a href="#" class="btn btn-sm btn-outline-warning mb-1">Calculus</a></li>
-                                <li><a href="#" class="btn btn-sm btn-outline-warning mb-1">Algebra</a></li>
-                                <li><a href="#" class="btn btn-sm btn-outline-warning mb-1">Coordinate Geometry</a></li>
-                                <li><a href="#" class="btn btn-sm btn-outline-warning mb-1">Trigonometry</a></li>
-                            </ul>
-                        </div>
-                    {% endif %}
-                </div>
-                
-                <div class="alert alert-info mt-3">
-                    <strong>Note:</strong> Chapter-wise tests will be available soon. These will help you practice specific topics and improve your weak areas.
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+    .resource-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+    
+    .btn-download {
+        width: 100%;
+        text-align: center;
+    }
+}
+</style>
 {% endblock %}

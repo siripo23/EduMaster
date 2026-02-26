@@ -1,0 +1,179 @@
+{% extends "base.html" %}
+
+{% block title %}{{ test_type }} - Test in Progress{% endblock %}
+
+{% block content %}
+<div class="test-container" id="testContainer">
+    <!-- Test Header with Timer -->
+    <div class="test-header-bar">
+        <div class="container-fluid">
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="test-info">
+                    <h5 class="mb-0">{{ test_type }}</h5>
+                    <small class="text-muted">{{ questions|length }} Questions</small>
+                </div>
+                <div class="test-timer" id="timer">
+                    <i class="fas fa-clock me-2"></i>
+                    <span id="timerDisplay">{{ duration }}:00</span>
+                </div>
+                <div class="test-status">
+                    <span class="answered-count">0</span> / {{ questions|length }} Answered
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container-fluid mt-4">
+        <div class="row">
+            <!-- Questions Section -->
+            <div class="col-lg-9">
+                <form method="POST" action="{{ url_for('submit_test') }}" id="testForm" autocomplete="off">
+                    {% for question in questions %}
+                    <div class="question-card" id="question-{{ loop.index }}" data-question-id="{{ question.id }}">
+                        <div class="question-header">
+                            <div>
+                                <span class="question-number">Question {{ loop.index }}</span>
+                                <span class="badge bg-{{ 'primary' if question.subject == 'Physics' else 'success' if question.subject == 'Chemistry' else 'info' if question.subject == 'Biology' else 'warning' }}">
+                                    {{ question.subject }}
+                                </span>
+                                <span class="badge bg-secondary">{{ question.difficulty }}</span>
+                            </div>
+                            <div class="marking-info">
+                                <span class="text-success">+4</span> | <span class="text-danger">-1</span>
+                            </div>
+                        </div>
+                        
+                        <div class="question-body">
+                            <p class="question-text">{{ question.question_text }}</p>
+                            
+                            <div class="options-grid">
+                                <div class="option-item">
+                                    <input type="radio" name="question_{{ question.id }}" id="q{{ question.id }}_a" value="A" class="option-input">
+                                    <label for="q{{ question.id }}_a" class="option-label">
+                                        <span class="option-letter">A</span>
+                                        <span class="option-text">{{ question.option_a }}</span>
+                                    </label>
+                                </div>
+                                
+                                <div class="option-item">
+                                    <input type="radio" name="question_{{ question.id }}" id="q{{ question.id }}_b" value="B" class="option-input">
+                                    <label for="q{{ question.id }}_b" class="option-label">
+                                        <span class="option-letter">B</span>
+                                        <span class="option-text">{{ question.option_b }}</span>
+                                    </label>
+                                </div>
+                                
+                                <div class="option-item">
+                                    <input type="radio" name="question_{{ question.id }}" id="q{{ question.id }}_c" value="C" class="option-input">
+                                    <label for="q{{ question.id }}_c" class="option-label">
+                                        <span class="option-letter">C</span>
+                                        <span class="option-text">{{ question.option_c }}</span>
+                                    </label>
+                                </div>
+                                
+                                <div class="option-item">
+                                    <input type="radio" name="question_{{ question.id }}" id="q{{ question.id }}_d" value="D" class="option-input">
+                                    <label for="q{{ question.id }}_d" class="option-label">
+                                        <span class="option-letter">D</span>
+                                        <span class="option-text">{{ question.option_d }}</span>
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="question-actions">
+                                <button type="button" class="btn btn-sm btn-outline-secondary clear-response" data-question="{{ question.id }}">
+                                    <i class="fas fa-eraser me-1"></i>Clear Response
+                                </button>
+                                <button type="button" class="btn btn-sm btn-outline-primary mark-review" data-question="{{ loop.index }}">
+                                    <i class="fas fa-flag me-1"></i>Mark for Review
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    
+                    <div class="submit-section">
+                        <button type="button" class="btn btn-success btn-lg" id="submitTestBtn">
+                            <i class="fas fa-paper-plane me-2"></i>Submit Test
+                        </button>
+                    </div>
+                </form>
+            </div>
+            
+            <!-- Question Navigator -->
+            <div class="col-lg-3">
+                <div class="navigator-panel">
+                    <h6 class="navigator-title">Question Palette</h6>
+                    
+                    <div class="legend">
+                        <div class="legend-item">
+                            <span class="legend-box answered"></span>
+                            <span>Answered</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-box not-answered"></span>
+                            <span>Not Answered</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-box marked"></span>
+                            <span>Marked for Review</span>
+                        </div>
+                    </div>
+                    
+                    <div class="question-grid">
+                        {% for question in questions %}
+                        <button type="button" class="nav-btn" data-question="{{ loop.index }}" onclick="scrollToQuestion({{ loop.index }})">
+                            {{ loop.index }}
+                        </button>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Malpractice Warning Modal -->
+<div class="modal fade" id="malpracticeModal" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title"><i class="fas fa-exclamation-triangle me-2"></i>Malpractice Detected</h5>
+            </div>
+            <div class="modal-body text-center py-4">
+                <i class="fas fa-ban text-danger" style="font-size: 4rem;"></i>
+                <h4 class="mt-3">Test Violation Detected!</h4>
+                <p class="text-muted">You attempted to switch tabs or exit fullscreen mode. Your test is being submitted automatically.</p>
+                <div class="spinner-border text-danger mt-3" role="status">
+                    <span class="visually-hidden">Submitting...</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/test_enhanced.css') }}">
+<script src="{{ url_for('static', filename='js/test_enhanced.js') }}"></script>
+<script>
+// Clear all radio buttons on page load to prevent browser caching
+document.addEventListener('DOMContentLoaded', function() {
+    // Clear all radio buttons
+    document.querySelectorAll('input[type="radio"]').forEach(radio => {
+        radio.checked = false;
+    });
+    
+    // Clear any stored form data
+    if (window.history && window.history.replaceState) {
+        window.history.replaceState(null, null, window.location.href);
+    }
+});
+
+// Initialize test with duration
+const testDuration = {{ duration }} * 60; // Convert to seconds
+const testForm = document.getElementById('testForm');
+const submitUrl = "{{ url_for('submit_test') }}";
+
+// Start test monitoring
+initializeTest(testDuration, testForm, submitUrl);
+</script>
+{% endblock %}

@@ -9,6 +9,7 @@ class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
+    phone = db.Column(db.String(20), nullable=True)
     password = db.Column(db.String(200), nullable=False)
     class_level = db.Column(db.String(10), nullable=False)  # PUC1 or PUC2
     stream = db.Column(db.String(10), nullable=False)  # NEET or JEE
@@ -16,6 +17,8 @@ class User(UserMixin, db.Model):
     level = db.Column(db.String(20), default='Beginner')  # Beginner/Intermediate/Advanced
     weak_topics = db.Column(db.Text, default='{}')  # JSON string
     strong_topics = db.Column(db.Text, default='{}')  # JSON string
+    reset_token = db.Column(db.String(100), nullable=True)
+    reset_token_expiry = db.Column(db.DateTime, nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     
     # Relationships

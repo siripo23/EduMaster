@@ -1,0 +1,282 @@
+{% extends "base.html" %}
+
+{% block title %}Start Test - {{ test_type }}{% endblock %}
+
+{% block content %}
+<div class="test-start-container">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="test-start-card">
+                    <div class="test-header">
+                        <div class="test-icon">
+                            <i class="fas fa-clipboard-list"></i>
+                        </div>
+                        <h2>{{ test_type }}</h2>
+                        <p class="test-subtitle">{{ current_user.stream }} Examination</p>
+                    </div>
+                    
+                    <div class="test-details">
+                        <div class="detail-item">
+                            <i class="fas fa-question-circle"></i>
+                            <div>
+                                <strong>Total Questions</strong>
+                                <span>{{ total_questions }}</span>
+                            </div>
+                        </div>
+                        <div class="detail-item">
+                            <i class="fas fa-clock"></i>
+                            <div>
+                                <strong>Duration</strong>
+                                <span>{{ duration }} minutes</span>
+                            </div>
+                        </div>
+                        <div class="detail-item">
+                            <i class="fas fa-star"></i>
+                            <div>
+                                <strong>Marking Scheme</strong>
+                                <span>+4 for correct, -1 for wrong</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="test-instructions">
+                        <h4><i class="fas fa-exclamation-triangle me-2"></i>Important Instructions</h4>
+                        <ul>
+                            <li><strong>Negative Marking:</strong> Each correct answer gives +4 marks, each wrong answer deducts -1 mark</li>
+                            <li><strong>Full Screen Mode:</strong> The test will run in full screen mode. Do not exit full screen</li>
+                            <li><strong>Tab Switching:</strong> Switching tabs or windows will automatically submit your test</li>
+                            <li><strong>AI Detection:</strong> Using AI tools or external help will result in immediate test submission</li>
+                            <li><strong>Timer:</strong> The test has a strict time limit. It will auto-submit when time expires</li>
+                            <li><strong>No Pause:</strong> Once started, the test cannot be paused</li>
+                            <li><strong>Review:</strong> You can review and change answers before final submission</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="test-agreement">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="agreeTerms" required>
+                            <label class="form-check-label" for="agreeTerms">
+                                I have read and understood all the instructions. I agree to follow the test rules and understand that any malpractice will result in immediate test submission.
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="test-actions">
+                        <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Cancel
+                        </a>
+                        <button type="button" class="btn btn-primary" id="startTestBtn" disabled>
+                            <i class="fas fa-play me-2"></i>Start Test
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.test-start-container {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #e8f4f8 0%, #f0e6fa 100%);
+    padding: 3rem 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.test-start-container::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, rgba(168, 192, 255, 0.08) 0%, transparent 70%);
+    animation: float 20s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% { transform: translate(0, 0) rotate(0deg); }
+    50% { transform: translate(30px, 30px) rotate(180deg); }
+}
+
+.test-start-card {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(255, 255, 255, 0.95) 100%);
+    backdrop-filter: blur(20px);
+    border-radius: 28px;
+    box-shadow: 0 20px 60px rgba(168, 192, 255, 0.15);
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.9);
+    position: relative;
+    z-index: 1;
+}
+
+.test-header {
+    background: linear-gradient(135deg, #a8c0ff 0%, #c5a3ff 100%);
+    color: white;
+    padding: 3rem 2rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.test-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="dots" width="10" height="10" patternUnits="userSpaceOnUse"><circle cx="5" cy="5" r="1" fill="white" opacity="0.15"/></pattern></defs><rect width="100" height="100" fill="url(%23dots)"/></svg>');
+}
+
+.test-icon {
+    width: 80px;
+    height: 80px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    margin: 0 auto 1.5rem;
+}
+
+.test-header h2 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: white;
+}
+
+.test-subtitle {
+    opacity: 0.9;
+    margin: 0;
+}
+
+.test-details {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    padding: 2rem;
+    background: #f8fafc;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.detail-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.detail-item i {
+    font-size: 2rem;
+    color: #a8c0ff;
+}
+
+.detail-item strong {
+    display: block;
+    color: #64748b;
+    font-size: 0.85rem;
+    margin-bottom: 0.25rem;
+}
+
+.detail-item span {
+    display: block;
+    color: #1e293b;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.test-instructions {
+    padding: 2rem;
+}
+
+.test-instructions h4 {
+    color: #dc2626;
+    margin-bottom: 1.5rem;
+}
+
+.test-instructions ul {
+    list-style: none;
+    padding: 0;
+}
+
+.test-instructions li {
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #e2e8f0;
+    color: #475569;
+    line-height: 1.6;
+}
+
+.test-instructions li:last-child {
+    border-bottom: none;
+}
+
+.test-agreement {
+    padding: 1.5rem 2rem;
+    background: linear-gradient(135deg, rgba(168, 237, 234, 0.15) 0%, rgba(212, 241, 244, 0.15) 100%);
+    border-top: 1px solid rgba(168, 192, 255, 0.15);
+    border-bottom: 1px solid rgba(168, 192, 255, 0.15);
+}
+
+.test-agreement .form-check-label {
+    color: #4a5568;
+    font-weight: 500;
+}
+
+.test-actions {
+    padding: 2rem;
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.test-actions .btn {
+    padding: 1rem 2rem;
+    font-weight: 600;
+    border-radius: 16px;
+}
+
+.test-actions .btn-primary {
+    background: linear-gradient(135deg, #a8c0ff 0%, #c5a3ff 100%);
+    border: none;
+    box-shadow: 0 8px 24px rgba(168, 192, 255, 0.25);
+    transition: all 0.3s ease;
+}
+
+.test-actions .btn-primary:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 32px rgba(168, 192, 255, 0.35);
+}
+
+.btn-primary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+</style>
+
+<script>
+document.getElementById('agreeTerms').addEventListener('change', function() {
+    document.getElementById('startTestBtn').disabled = !this.checked;
+});
+
+document.getElementById('startTestBtn').addEventListener('click', function() {
+    // Request fullscreen
+    const elem = document.documentElement;
+    if (elem.requestFullscreen) {
+        elem.requestFullscreen();
+    } else if (elem.webkitRequestFullscreen) {
+        elem.webkitRequestFullscreen();
+    } else if (elem.msRequestFullscreen) {
+        elem.msRequestFullscreen();
+    }
+    
+    // Redirect to test page
+    setTimeout(() => {
+        window.location.href = "{{ url_for('take_test', test_type=test_type) }}";
+    }, 500);
+});
+</script>
+{% endblock %}

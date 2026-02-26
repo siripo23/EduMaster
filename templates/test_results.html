@@ -3,101 +3,387 @@
 {% block title %}Test Results - NEET/JEE Learning App{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-8">
-        <div class="card">
-            <div class="card-header text-center">
-                <h3>{{ test_attempt.test_type.title() }} Test Results</h3>
-            </div>
-            <div class="card-body">
-                <div class="text-center mb-4">
-                    <h1 class="display-4 text-primary">{{ test_attempt.score }}/{{ test_attempt.total_questions }}</h1>
-                    <h4>{{ "%.1f"|format(analysis.overall_percentage) }}%</h4>
-                    <p class="text-muted">Time taken: {{ test_attempt.time_taken }} minutes</p>
-                </div>
-                
-                {% if test_attempt.test_type == 'initial' %}
-                <div class="alert alert-info text-center">
-                    <h5>Your Level: {{ current_user.level }}</h5>
-                    <p>Based on your performance, we've determined your current level. This will help us generate personalized tests for you.</p>
-                </div>
-                {% endif %}
-                
-                <div class="row">
-                    {% for subject, scores in analysis.subject_scores.items() %}
-                    <div class="col-md-4 mb-3">
-                        <div class="card">
-                            <div class="card-body text-center">
+<div class="results-container">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="results-card">
+                    <div class="results-header">
+                        <div class="results-icon">
+                            <i class="fas fa-trophy"></i>
+                        </div>
+                        <h2>Test Completed!</h2>
+                        <p class="test-type">{{ test_attempt.test_type.replace('_', ' ').title() }} Test</p>
+                    </div>
+                    
+                    <div class="score-summary">
+                        <div class="main-score">
+                            <div class="score-circle">
+                                <div class="score-value">{{ final_score }}</div>
+                                <div class="score-max">/ {{ max_score }}</div>
+                            </div>
+                            <div class="percentage">{{ "%.1f"|format((final_score / max_score * 100) if max_score > 0 else 0) }}%</div>
+                        </div>
+                        
+                        <div class="score-breakdown">
+                            <div class="breakdown-item correct">
+                                <i class="fas fa-check-circle"></i>
+                                <div>
+                                    <strong>{{ correct }}</strong>
+                                    <span>Correct (+4 each)</span>
+                                </div>
+                            </div>
+                            <div class="breakdown-item wrong">
+                                <i class="fas fa-times-circle"></i>
+                                <div>
+                                    <strong>{{ wrong }}</strong>
+                                    <span>Wrong (-1 each)</span>
+                                </div>
+                            </div>
+                            <div class="breakdown-item unattempted">
+                                <i class="fas fa-minus-circle"></i>
+                                <div>
+                                    <strong>{{ unattempted }}</strong>
+                                    <span>Unattempted</span>
+                                </div>
+                            </div>
+                            <div class="breakdown-item time">
+                                <i class="fas fa-clock"></i>
+                                <div>
+                                    <strong>{{ test_attempt.time_taken }}</strong>
+                                    <span>Minutes</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    {% if test_attempt.test_type == 'initial' %}
+                    <div class="level-badge-result">
+                        <i class="fas fa-medal me-2"></i>
+                        <span>Your Level: <strong>{{ current_user.level }}</strong></span>
+                        <p class="mt-2 mb-0">Based on your performance, we've determined your current level for personalized tests.</p>
+                    </div>
+                    {% endif %}
+                    
+                    {% if analysis.subject_scores %}
+                    <div class="subject-performance">
+                        <h4><i class="fas fa-chart-bar me-2"></i>Subject-wise Performance</h4>
+                        <div class="subjects-grid">
+                            {% for subject, scores in analysis.subject_scores.items() %}
+                            <div class="subject-card">
                                 <h5>{{ subject }}</h5>
-                                <div class="progress mb-2">
-                                    <div class="progress-bar" role="progressbar" 
-                                         style="width: {{ scores.percentage }}%"
-                                         aria-valuenow="{{ scores.percentage }}" 
-                                         aria-valuemin="0" aria-valuemax="100">
+                                <div class="subject-score">{{ scores.score }}/{{ scores.total }}</div>
+                                <div class="progress">
+                                    <div class="progress-bar {% if scores.percentage >= 80 %}bg-success{% elif scores.percentage >= 60 %}bg-warning{% else %}bg-danger{% endif %}" 
+                                         style="width: {{ scores.percentage }}%">
                                     </div>
                                 </div>
-                                <p>{{ scores.score }}/{{ scores.total }} ({{ "%.1f"|format(scores.percentage) }}%)</p>
+                                <div class="subject-percentage">{{ "%.1f"|format(scores.percentage) }}%</div>
                             </div>
+                            {% endfor %}
                         </div>
                     </div>
-                    {% endfor %}
-                </div>
-                
-                {% if analysis.weak_topics %}
-                <div class="mt-4">
-                    <h5>Areas to Focus On:</h5>
-                    <div class="row">
-                        {% for subject, topics in analysis.weak_topics.items() %}
-                        <div class="col-md-6">
-                            <div class="card border-warning">
-                                <div class="card-header bg-warning">
-                                    <strong>{{ subject }}</strong>
-                                </div>
-                                <div class="card-body">
-                                    <ul class="list-unstyled">
-                                        {% for topic in topics %}
-                                        <li>• {{ topic }}</li>
-                                        {% endfor %}
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                        {% endfor %}
-                    </div>
-                </div>
-                {% endif %}
-                
-                {% if analysis.strong_topics %}
-                <div class="mt-4">
-                    <h5>Your Strong Areas:</h5>
-                    <div class="row">
-                        {% for subject, topics in analysis.strong_topics.items() %}
-                        <div class="col-md-6">
-                            <div class="card border-success">
-                                <div class="card-header bg-success text-white">
-                                    <strong>{{ subject }}</strong>
-                                </div>
-                                <div class="card-body">
-                                    <ul class="list-unstyled">
-                                        {% for topic in topics %}
-                                        <li>• {{ topic }}</li>
-                                        {% endfor %}
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                        {% endfor %}
-                    </div>
-                </div>
-                {% endif %}
-                
-                <div class="text-center mt-4">
-                    <a href="{{ url_for('dashboard') }}" class="btn btn-primary me-3">Back to Dashboard</a>
-                    {% if test_attempt.test_type != 'initial' %}
-                    <a href="{{ url_for('adaptive_test') }}" class="btn btn-success">Take Another Test</a>
                     {% endif %}
+                    
+                    <div class="row">
+                        {% if analysis.weak_topics %}
+                        <div class="col-md-6">
+                            <div class="topics-section weak-topics">
+                                <h5><i class="fas fa-exclamation-triangle me-2"></i>Focus Areas</h5>
+                                {% for subject, topics in analysis.weak_topics.items() %}
+                                <div class="topic-group">
+                                    <strong>{{ subject }}</strong>
+                                    <ul>
+                                        {% for topic in topics %}
+                                        <li>{{ topic }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        {% if analysis.strong_topics %}
+                        <div class="col-md-6">
+                            <div class="topics-section strong-topics">
+                                <h5><i class="fas fa-star me-2"></i>Strong Areas</h5>
+                                {% for subject, topics in analysis.strong_topics.items() %}
+                                <div class="topic-group">
+                                    <strong>{{ subject }}</strong>
+                                    <ul>
+                                        {% for topic in topics %}
+                                        <li>{{ topic }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="results-actions">
+                        <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">
+                            <i class="fas fa-home me-2"></i>Dashboard
+                        </a>
+                        {% if test_attempt.test_type != 'initial' %}
+                        <a href="{{ url_for('test_start', test_type='adaptive') }}" class="btn btn-primary">
+                            <i class="fas fa-redo me-2"></i>Take Another Test
+                        </a>
+                        {% endif %}
+                        <a href="{{ url_for('profile') }}" class="btn btn-success">
+                            <i class="fas fa-chart-line me-2"></i>View Analytics
+                        </a>
+                    </div>
                 </div>
             </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.results-container {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 50%, #fef3c7 100%);
+    padding: 3rem 0;
+}
+
+.results-card {
+    background: white;
+    border-radius: 24px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.results-header {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+    padding: 3rem 2rem;
+    text-align: center;
+}
+
+.results-icon {
+    width: 80px;
+    height: 80px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    margin: 0 auto 1.5rem;
+}
+
+.results-header h2 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: white;
+}
+
+.test-type {
+    opacity: 0.9;
+    margin: 0;
+}
+
+.score-summary {
+    padding: 3rem 2rem;
+    background: #f8fafc;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.main-score {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.score-circle {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.5rem;
+}
+
+.score-value {
+    font-size: 4rem;
+    font-weight: 800;
+    color: #10b981;
+    font-family: 'Poppins', sans-serif;
+}
+
+.score-max {
+    font-size: 2rem;
+    color: #64748b;
+}
+
+.percentage {
+    font-size: 1.5rem;
+    color: #64748b;
+    margin-top: 0.5rem;
+}
+
+.score-breakdown {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1.5rem;
+}
+
+.breakdown-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.breakdown-item i {
+    font-size: 2rem;
+}
+
+.breakdown-item.correct i { color: #10b981; }
+.breakdown-item.wrong i { color: #ef4444; }
+.breakdown-item.unattempted i { color: #64748b; }
+.breakdown-item.time i { color: #3b82f6; }
+
+.breakdown-item strong {
+    display: block;
+    font-size: 1.5rem;
+    color: #1e293b;
+}
+
+.breakdown-item span {
+    display: block;
+    font-size: 0.85rem;
+    color: #64748b;
+}
+
+.level-badge-result {
+    background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+    color: white;
+    padding: 1.5rem 2rem;
+    margin: 0 2rem 2rem;
+    border-radius: 12px;
+    text-align: center;
+}
+
+.level-badge-result strong {
+    font-size: 1.25rem;
+}
+
+.subject-performance {
+    padding: 2rem;
+}
+
+.subject-performance h4 {
+    margin-bottom: 1.5rem;
+    color: #1e293b;
+}
+
+.subjects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+}
+
+.subject-card {
+    background: #f8fafc;
+    padding: 1.5rem;
+    border-radius: 12px;
+    text-align: center;
+}
+
+.subject-card h5 {
+    color: #1e293b;
+    margin-bottom: 0.75rem;
+}
+
+.subject-score {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #3b82f6;
+    margin-bottom: 0.75rem;
+}
+
+.subject-percentage {
+    margin-top: 0.5rem;
+    color: #64748b;
+    font-weight: 600;
+}
+
+.topics-section {
+    padding: 1.5rem;
+    border-radius: 12px;
+    margin-bottom: 1.5rem;
+}
+
+.weak-topics {
+    background: #fef2f2;
+    border: 2px solid #fecaca;
+}
+
+.strong-topics {
+    background: #f0fdf4;
+    border: 2px solid #bbf7d0;
+}
+
+.topics-section h5 {
+    margin-bottom: 1rem;
+}
+
+.weak-topics h5 { color: #dc2626; }
+.strong-topics h5 { color: #16a34a; }
+
+.topic-group {
+    margin-bottom: 1rem;
+}
+
+.topic-group strong {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #1e293b;
+}
+
+.topic-group ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.topic-group li {
+    padding: 0.25rem 0;
+    color: #475569;
+}
+
+.results-actions {
+    padding: 2rem;
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.results-actions .btn {
+    padding: 1rem 2rem;
+    font-weight: 600;
+    border-radius: 12px;
+}
+
+@media (max-width: 768px) {
+    .score-value {
+        font-size: 3rem;
+    }
+    
+    .score-breakdown {
+        grid-template-columns: 1fr 1fr;
+    }
+    
+    .results-actions {
+        flex-direction: column;
+    }
+}
+</style>
         </div>
     </div>
 </div>

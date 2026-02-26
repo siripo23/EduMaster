@@ -211,3 +211,81 @@ class AdaptiveTestEngine:
         
         questions = query.limit(limit * 2).all()
         return random.sample(questions, min(limit, len(questions)))
+    
+    def generate_full_paper(self, stream):
+        """Generate a full NEET/JEE paper"""
+        selected_questions = []
+        
+        if stream == 'NEET':
+            # NEET: 45 Physics, 45 Chemistry, 90 Biology
+            distribution = {'Physics': 45, 'Chemistry': 45, 'Biology': 90}
+        else:
+            # JEE: 60 Physics, 60 Chemistry, 60 Mathematics
+            distribution = {'Physics': 60, 'Chemistry': 60, 'Mathematics': 60}
+        
+        for subject, count in distribution.items():
+            # Get balanced questions across difficulties
+            easy_count = int(count * 0.3)
+            medium_count = int(count * 0.5)
+            hard_count = count - easy_count - medium_count
+            
+            easy_questions = Question.query.filter_by(
+                subject=subject,
+                stream=stream,
+                difficulty='Easy'
+            ).order_by(Question.id.desc()).limit(easy_count * 2).all()
+            
+            medium_questions = Question.query.filter_by(
+                subject=subject,
+                stream=stream,
+                difficulty='Medium'
+            ).order_by(Question.id.desc()).limit(medium_count * 2).all()
+            
+            hard_questions = Question.query.filter_by(
+                subject=subject,
+                stream=stream,
+                difficulty='Hard'
+            ).order_by(Question.id.desc()).limit(hard_count * 2).all()
+            
+            # Randomly select from available questions
+            selected_questions.extend(random.sample(easy_questions, min(easy_count, len(easy_questions))))
+            selected_questions.extend(random.sample(medium_questions, min(medium_count, len(medium_questions))))
+            selected_questions.extend(random.sample(hard_questions, min(hard_count, len(hard_questions))))
+        
+        random.shuffle(selected_questions)
+        return selected_questions
+    
+    def generate_subject_test(self, stream, subject, num_questions=30):
+        """Generate subject-specific test"""
+        # Get balanced questions across difficulties
+        easy_count = int(num_questions * 0.3)
+        medium_count = int(num_questions * 0.5)
+        hard_count = num_questions - easy_count - medium_count
+        
+        selected_questions = []
+        
+        easy_questions = Question.query.filter_by(
+            subject=subject,
+            stream=stream,
+            difficulty='Easy'
+        ).order_by(Question.id.desc()).limit(easy_count * 2).all()
+        
+        medium_questions = Question.query.filter_by(
+            subject=subject,
+            stream=stream,
+            difficulty='Medium'
+        ).order_by(Question.id.desc()).limit(medium_count * 2).all()
+        
+        hard_questions = Question.query.filter_by(
+            subject=subject,
+            stream=stream,
+            difficulty='Hard'
+        ).order_by(Question.id.desc()).limit(hard_count * 2).all()
+        
+        # Randomly select from available questions
+        selected_questions.extend(random.sample(easy_questions, min(easy_count, len(easy_questions))))
+        selected_questions.extend(random.sample(medium_questions, min(medium_count, len(medium_questions))))
+        selected_questions.extend(random.sample(hard_questions, min(hard_count, len(hard_questions))))
+        
+        random.shuffle(selected_questions)
+        return selected_questions[:num_questions]
