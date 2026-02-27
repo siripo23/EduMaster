@@ -104,44 +104,45 @@
                 <h5>Performance Trends</h5>
             </div>
             <div class="card-body">
-                <canvas id="performanceChart" width="400" height="200"></canvas>
-                <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-                <script>
-                    const ctx = document.getElementById('performanceChart').getContext('2d');
-                    const chart = new Chart(ctx, {
-                        type: 'line',
-                        data: {
-                            labels: [
-                                {% for test in test_history|reverse %}
-                                    '{{ test.created_at.strftime("%m-%d") }}'{% if not loop.last %},{% endif %}
-                                {% endfor %}
-                            ],
-                            datasets: [{
-                                label: 'Test Scores (%)',
-                                data: [
-                                    {% for test in test_history|reverse %}
-                                        {% set max_score = test.total_questions * 4 %}
-                                        {{ ((test.score / max_score * 100) if max_score > 0 else 0)|round(1) }}{% if not loop.last %},{% endif %}
-                                    {% endfor %}
-                                ],
-                                borderColor: 'rgb(75, 192, 192)',
-                                backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                                tension: 0.1
-                            }]
-                        },
-                        options: {
-                            responsive: true,
-                            scales: {
-                                y: {
-                                    beginAtZero: true,
-                                    max: 100
-                                }
-                            }
-                        }
-                    });
-                </script>
+                <canvas id="performanceChart" 
+                        width="400" 
+                        height="200"
+                        data-labels='{{ chart_labels|tojson }}'
+                        data-scores='{{ chart_scores|tojson }}'></canvas>
             </div>
         </div>
+        
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script>
+            // Get chart data from data attributes
+            const canvas = document.getElementById('performanceChart');
+            const chartLabels = JSON.parse(canvas.dataset.labels);
+            const chartScores = JSON.parse(canvas.dataset.scores);
+            
+            const ctx = canvas.getContext('2d');
+            const chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: chartLabels,
+                    datasets: [{
+                        label: 'Test Scores (%)',
+                        data: chartScores,
+                        borderColor: 'rgb(75, 192, 192)',
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100
+                        }
+                    }
+                }
+            });
+        </script>
         {% endif %}
     </div>
 </div>

@@ -1,131 +1,127 @@
 {% extends "base.html" %}
 
-{% block title %}{{ test_type }} - Test in Progress{% endblock %}
+{% block title %}Test - {{ test_type }}{% endblock %}
 
 {% block content %}
-<div class="test-container" id="testContainer">
-    <!-- Test Header with Timer -->
-    <div class="test-header-bar">
+<div class="test-container">
+    <!-- Timer and Header -->
+    <div class="test-header">
         <div class="container-fluid">
-            <div class="d-flex justify-content-between align-items-center">
-                <div class="test-info">
-                    <h5 class="mb-0">{{ test_type }}</h5>
-                    <small class="text-muted">{{ questions|length }} Questions</small>
+            <div class="row align-items-center">
+                <div class="col-md-4">
+                    <h5 class="test-title">{{ test_type }} Test</h5>
                 </div>
-                <div class="test-timer" id="timer">
-                    <i class="fas fa-clock me-2"></i>
-                    <span id="timerDisplay">{{ duration }}:00</span>
+                <div class="col-md-4 text-center">
+                    <div class="timer-display" id="timer">
+                        <i class="fas fa-clock"></i>
+                        <span id="time-remaining">{{ duration }}:00</span>
+                    </div>
                 </div>
-                <div class="test-status">
-                    <span class="answered-count">0</span> / {{ questions|length }} Answered
+                <div class="col-md-4 text-end">
+                    <button type="button" class="btn btn-danger btn-submit" onclick="confirmSubmit()" disabled id="submitBtn">
+                        <i class="fas fa-check-circle"></i> Submit Test
+                    </button>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="container-fluid mt-4">
-        <div class="row">
-            <!-- Questions Section -->
-            <div class="col-lg-9">
-                <form method="POST" action="{{ url_for('submit_test') }}" id="testForm" autocomplete="off">
-                    {% for question in questions %}
-                    <div class="question-card" id="question-{{ loop.index }}" data-question-id="{{ question.id }}">
-                        <div class="question-header">
-                            <div>
-                                <span class="question-number">Question {{ loop.index }}</span>
-                                <span class="badge bg-{{ 'primary' if question.subject == 'Physics' else 'success' if question.subject == 'Chemistry' else 'info' if question.subject == 'Biology' else 'warning' }}">
-                                    {{ question.subject }}
-                                </span>
-                                <span class="badge bg-secondary">{{ question.difficulty }}</span>
+    <!-- Main Test Area -->
+    <div class="test-main">
+        <div class="container-fluid h-100">
+            <div class="row h-100">
+                <!-- Question Area (75%) -->
+                <div class="col-lg-9 question-area">
+                    <form id="testForm" method="POST" action="{{ url_for('submit_test') }}" autocomplete="off">
+                        {% for question in questions %}
+                        <div class="question-card" id="question-{{ loop.index }}" style="display: {% if loop.index == 1 %}block{% else %}none{% endif %};">
+                            <div class="question-header">
+                                <span class="question-number">Question {{ loop.index }} of {{ questions|length }}</span>
+                                <span class="question-subject">{{ question.subject }}</span>
                             </div>
-                            <div class="marking-info">
-                                <span class="text-success">+4</span> | <span class="text-danger">-1</span>
-                            </div>
-                        </div>
-                        
-                        <div class="question-body">
-                            <p class="question-text">{{ question.question_text }}</p>
                             
-                            <div class="options-grid">
-                                <div class="option-item">
-                                    <input type="radio" name="question_{{ question.id }}" id="q{{ question.id }}_a" value="A" class="option-input">
-                                    <label for="q{{ question.id }}_a" class="option-label">
-                                        <span class="option-letter">A</span>
+                            <div class="question-content">
+                                <p class="question-text">{{ question.question_text }}</p>
+                                
+                                <div class="options-list">
+                                    <label class="option-item">
+                                        <input type="radio" name="question_{{ question.id }}" value="A" class="option-radio">
+                                        <span class="option-label">A</span>
                                         <span class="option-text">{{ question.option_a }}</span>
                                     </label>
-                                </div>
-                                
-                                <div class="option-item">
-                                    <input type="radio" name="question_{{ question.id }}" id="q{{ question.id }}_b" value="B" class="option-input">
-                                    <label for="q{{ question.id }}_b" class="option-label">
-                                        <span class="option-letter">B</span>
+                                    
+                                    <label class="option-item">
+                                        <input type="radio" name="question_{{ question.id }}" value="B" class="option-radio">
+                                        <span class="option-label">B</span>
                                         <span class="option-text">{{ question.option_b }}</span>
                                     </label>
-                                </div>
-                                
-                                <div class="option-item">
-                                    <input type="radio" name="question_{{ question.id }}" id="q{{ question.id }}_c" value="C" class="option-input">
-                                    <label for="q{{ question.id }}_c" class="option-label">
-                                        <span class="option-letter">C</span>
+                                    
+                                    <label class="option-item">
+                                        <input type="radio" name="question_{{ question.id }}" value="C" class="option-radio">
+                                        <span class="option-label">C</span>
                                         <span class="option-text">{{ question.option_c }}</span>
                                     </label>
-                                </div>
-                                
-                                <div class="option-item">
-                                    <input type="radio" name="question_{{ question.id }}" id="q{{ question.id }}_d" value="D" class="option-input">
-                                    <label for="q{{ question.id }}_d" class="option-label">
-                                        <span class="option-letter">D</span>
+                                    
+                                    <label class="option-item">
+                                        <input type="radio" name="question_{{ question.id }}" value="D" class="option-radio">
+                                        <span class="option-label">D</span>
                                         <span class="option-text">{{ question.option_d }}</span>
                                     </label>
                                 </div>
                             </div>
                             
                             <div class="question-actions">
-                                <button type="button" class="btn btn-sm btn-outline-secondary clear-response" data-question="{{ question.id }}">
-                                    <i class="fas fa-eraser me-1"></i>Clear Response
+                                <button type="button" class="btn btn-outline-secondary" onclick="markForReview({{ loop.index }})" id="markBtn-{{ loop.index }}">
+                                    <i class="fas fa-bookmark"></i> Mark for Review
                                 </button>
-                                <button type="button" class="btn btn-sm btn-outline-primary mark-review" data-question="{{ loop.index }}">
-                                    <i class="fas fa-flag me-1"></i>Mark for Review
+                                <button type="button" class="btn btn-outline-secondary" onclick="clearResponse({{ loop.index }}, {{ question.id }})">
+                                    <i class="fas fa-eraser"></i> Clear Response
                                 </button>
+                                {% if loop.index < questions|length %}
+                                <button type="button" class="btn btn-primary" onclick="nextQuestion()">
+                                    Next <i class="fas fa-arrow-right"></i>
+                                </button>
+                                {% endif %}
                             </div>
                         </div>
-                    </div>
-                    {% endfor %}
-                    
-                    <div class="submit-section">
-                        <button type="button" class="btn btn-success btn-lg" id="submitTestBtn">
-                            <i class="fas fa-paper-plane me-2"></i>Submit Test
-                        </button>
-                    </div>
-                </form>
-            </div>
-            
-            <!-- Question Navigator -->
-            <div class="col-lg-3">
-                <div class="navigator-panel">
-                    <h6 class="navigator-title">Question Palette</h6>
-                    
-                    <div class="legend">
-                        <div class="legend-item">
-                            <span class="legend-box answered"></span>
-                            <span>Answered</span>
-                        </div>
-                        <div class="legend-item">
-                            <span class="legend-box not-answered"></span>
-                            <span>Not Answered</span>
-                        </div>
-                        <div class="legend-item">
-                            <span class="legend-box marked"></span>
-                            <span>Marked for Review</span>
-                        </div>
-                    </div>
-                    
-                    <div class="question-grid">
-                        {% for question in questions %}
-                        <button type="button" class="nav-btn" data-question="{{ loop.index }}" onclick="scrollToQuestion({{ loop.index }})">
-                            {{ loop.index }}
-                        </button>
                         {% endfor %}
+                    </form>
+                </div>
+
+                <!-- Navigator Panel (25%) -->
+                <div class="col-lg-3 navigator-panel">
+                    <div class="navigator-content">
+                        <h6 class="navigator-title">Question Navigator</h6>
+                        
+                        <div class="legend">
+                            <div class="legend-item">
+                                <span class="legend-box answered"></span>
+                                <span>Answered</span>
+                            </div>
+                            <div class="legend-item">
+                                <span class="legend-box not-answered"></span>
+                                <span>Not Answered</span>
+                            </div>
+                            <div class="legend-item">
+                                <span class="legend-box marked"></span>
+                                <span>Marked</span>
+                            </div>
+                            <div class="legend-item">
+                                <span class="legend-box not-visited"></span>
+                                <span>Not Visited</span>
+                            </div>
+                        </div>
+                        
+                        <div class="question-grid">
+                            {% for question in questions %}
+                            <button type="button" 
+                                    class="question-btn not-visited" 
+                                    id="nav-{{ loop.index }}"
+                                    onclick="goToQuestion({{ loop.index }})">
+                                {{ loop.index }}
+                            </button>
+                            {% endfor %}
+                        </div>
                     </div>
                 </div>
             </div>
@@ -133,47 +129,543 @@
     </div>
 </div>
 
-<!-- Malpractice Warning Modal -->
-<div class="modal fade" id="malpracticeModal" data-bs-backdrop="static" data-bs-keyboard="false">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header bg-danger text-white">
-                <h5 class="modal-title"><i class="fas fa-exclamation-triangle me-2"></i>Malpractice Detected</h5>
-            </div>
-            <div class="modal-body text-center py-4">
-                <i class="fas fa-ban text-danger" style="font-size: 4rem;"></i>
-                <h4 class="mt-3">Test Violation Detected!</h4>
-                <p class="text-muted">You attempted to switch tabs or exit fullscreen mode. Your test is being submitted automatically.</p>
-                <div class="spinner-border text-danger mt-3" role="status">
-                    <span class="visually-hidden">Submitting...</span>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+<style>
+:root {
+    --oxford-blue: #002147;
+    --oxford-light: #003d82;
+    --oxford-lighter: #0056b3;
+    --oxford-accent: #4a90e2;
+    --oxford-bg: #f0f4f8;
+    --oxford-card: #ffffff;
+    --oxford-border: #d1dce5;
+    --oxford-text: #1a1a1a;
+    --oxford-text-light: #4a5568;
+    --success-green: #10b981;
+    --warning-orange: #f59e0b;
+    --danger-red: #ef4444;
+}
 
-<link rel="stylesheet" href="{{ url_for('static', filename='css/test_enhanced.css') }}">
-<script src="{{ url_for('static', filename='js/test_enhanced.js') }}"></script>
+body {
+    background: var(--oxford-bg);
+    font-family: 'Inter', sans-serif;
+}
+
+.test-container {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Header */
+.test-header {
+    background: var(--oxford-blue);
+    color: white;
+    padding: 1rem 0;
+    box-shadow: 0 2px 8px rgba(0, 33, 71, 0.3);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.test-title {
+    margin: 0;
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+.timer-display {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 0.5rem 1.5rem;
+    border-radius: 8px;
+    font-size: 1.2rem;
+    font-weight: 700;
+    display: inline-block;
+}
+
+.timer-display i {
+    margin-right: 0.5rem;
+}
+
+.btn-submit {
+    background: var(--danger-red);
+    border: none;
+    padding: 0.6rem 1.5rem;
+    font-weight: 600;
+    border-radius: 8px;
+}
+
+.btn-submit:hover:not(:disabled) {
+    background: #dc2626;
+}
+
+.btn-submit:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Main Test Area */
+.test-main {
+    flex: 1;
+    padding: 1.5rem 0;
+}
+
+/* Question Area (75%) */
+.question-area {
+    padding-right: 1rem;
+}
+
+.question-card {
+    background: var(--oxford-card);
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 2px 12px rgba(0, 33, 71, 0.1);
+    border: 1px solid var(--oxford-border);
+    min-height: calc(100vh - 200px);
+    display: flex;
+    flex-direction: column;
+}
+
+.question-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid var(--oxford-border);
+}
+
+.question-number {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--oxford-blue);
+}
+
+.question-subject {
+    background: var(--oxford-light);
+    color: white;
+    padding: 0.25rem 1rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.question-content {
+    flex: 1;
+    margin-bottom: 2rem;
+}
+
+.question-text {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: var(--oxford-text);
+    margin-bottom: 2rem;
+    font-weight: 500;
+}
+
+.options-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.option-item {
+    display: flex;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    background: var(--oxford-bg);
+    border: 2px solid var(--oxford-border);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.option-item:hover {
+    background: #e6f0ff;
+    border-color: var(--oxford-accent);
+}
+
+.option-item:has(.option-radio:checked) {
+    background: var(--oxford-light);
+    border-color: var(--oxford-blue);
+    color: white;
+}
+
+.option-radio {
+    display: none;
+}
+
+.option-label {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: white;
+    border: 2px solid var(--oxford-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    color: var(--oxford-blue);
+    margin-right: 1rem;
+    flex-shrink: 0;
+}
+
+.option-item:has(.option-radio:checked) .option-label {
+    background: white;
+    border-color: white;
+    color: var(--oxford-blue);
+}
+
+.option-text {
+    flex: 1;
+    font-size: 1rem;
+    line-height: 1.6;
+}
+
+.option-item:has(.option-radio:checked) .option-text {
+    color: white;
+}
+
+.question-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+    padding-top: 1.5rem;
+    border-top: 2px solid var(--oxford-border);
+}
+
+.question-actions .btn {
+    padding: 0.7rem 1.5rem;
+    font-weight: 600;
+    border-radius: 8px;
+}
+
+.btn-outline-secondary {
+    border: 2px solid var(--oxford-border);
+    color: var(--oxford-text);
+}
+
+.btn-outline-secondary:hover {
+    background: var(--oxford-light);
+    border-color: var(--oxford-light);
+    color: white;
+}
+
+.btn-primary {
+    background: var(--oxford-blue);
+    border: none;
+}
+
+.btn-primary:hover {
+    background: var(--oxford-light);
+}
+
+/* Navigator Panel (25%) */
+.navigator-panel {
+    background: var(--oxford-card);
+    border-left: 2px solid var(--oxford-border);
+    padding: 1.5rem;
+    max-height: calc(100vh - 100px);
+    overflow-y: auto;
+}
+
+.navigator-content {
+    position: sticky;
+    top: 1rem;
+}
+
+.navigator-title {
+    color: var(--oxford-blue);
+    font-weight: 700;
+    margin-bottom: 1rem;
+    font-size: 1rem;
+}
+
+.legend {
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--oxford-border);
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+    font-size: 0.85rem;
+    color: var(--oxford-text-light);
+}
+
+.legend-box {
+    width: 20px;
+    height: 20px;
+    border-radius: 4px;
+    border: 1px solid var(--oxford-border);
+}
+
+.legend-box.answered {
+    background: var(--success-green);
+}
+
+.legend-box.not-answered {
+    background: var(--danger-red);
+}
+
+.legend-box.marked {
+    background: var(--warning-orange);
+}
+
+.legend-box.not-visited {
+    background: var(--oxford-bg);
+}
+
+.question-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 0.5rem;
+}
+
+.question-btn {
+    width: 100%;
+    aspect-ratio: 1;
+    border: 2px solid var(--oxford-border);
+    background: var(--oxford-bg);
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: var(--oxford-text);
+}
+
+.question-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 2px 8px rgba(0, 33, 71, 0.2);
+}
+
+.question-btn.answered {
+    background: var(--success-green);
+    border-color: var(--success-green);
+    color: white;
+}
+
+.question-btn.not-answered {
+    background: var(--danger-red);
+    border-color: var(--danger-red);
+    color: white;
+}
+
+.question-btn.marked {
+    background: var(--warning-orange);
+    border-color: var(--warning-orange);
+    color: white;
+}
+
+.question-btn.current {
+    border: 3px solid var(--oxford-blue);
+    box-shadow: 0 0 0 3px rgba(0, 33, 71, 0.2);
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+    .question-area {
+        padding-right: 0;
+        margin-bottom: 1rem;
+    }
+    
+    .navigator-panel {
+        border-left: none;
+        border-top: 2px solid var(--oxford-border);
+        max-height: none;
+    }
+    
+    .question-grid {
+        grid-template-columns: repeat(8, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .question-card {
+        padding: 1.5rem;
+    }
+    
+    .question-actions {
+        flex-direction: column;
+    }
+    
+    .question-grid {
+        grid-template-columns: repeat(6, 1fr);
+    }
+}
+</style>
+
 <script>
-// Clear all radio buttons on page load to prevent browser caching
+// Initialize test
+let currentQuestion = 1;
+let totalQuestions = {{ questions|length }};
+let visitedQuestions = new Set([1]);
+let markedQuestions = new Set();
+let testDuration = {{ duration }} * 60; // Convert to seconds
+let timeRemaining = testDuration;
+let timerInterval;
+
+// Start timer
+function startTimer() {
+    timerInterval = setInterval(() => {
+        timeRemaining--;
+        updateTimerDisplay();
+        
+        // Warning at 5 minutes
+        if (timeRemaining === 300) {
+            alert('⚠️ Only 5 minutes remaining!');
+        }
+        
+        // Auto-submit when time expires
+        if (timeRemaining <= 0) {
+            clearInterval(timerInterval);
+            alert('⏰ Time expired! Submitting test...');
+            document.getElementById('testForm').submit();
+        }
+    }, 1000);
+}
+
+function updateTimerDisplay() {
+    const minutes = Math.floor(timeRemaining / 60);
+    const seconds = timeRemaining % 60;
+    const display = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    document.getElementById('time-remaining').textContent = display;
+    
+    // Change color when less than 5 minutes
+    if (timeRemaining < 300) {
+        document.getElementById('timer').style.background = 'rgba(239, 68, 68, 0.2)';
+        document.getElementById('timer').style.color = '#ef4444';
+    }
+}
+
+// Update navigator on page load
 document.addEventListener('DOMContentLoaded', function() {
-    // Clear all radio buttons
+    startTimer(); // Start the timer
+    updateNavigator();
+    updateSubmitButton();
+    
+    // Clear all radio buttons on load
     document.querySelectorAll('input[type="radio"]').forEach(radio => {
         radio.checked = false;
     });
     
-    // Clear any stored form data
-    if (window.history && window.history.replaceState) {
-        window.history.replaceState(null, null, window.location.href);
-    }
+    // Add change listeners to all radio buttons
+    document.querySelectorAll('input[type="radio"]').forEach(radio => {
+        radio.addEventListener('change', function() {
+            updateNavigator();
+            updateSubmitButton();
+        });
+    });
 });
 
-// Initialize test with duration
-const testDuration = {{ duration }} * 60; // Convert to seconds
-const testForm = document.getElementById('testForm');
-const submitUrl = "{{ url_for('submit_test') }}";
+function nextQuestion() {
+    if (currentQuestion < totalQuestions) {
+        goToQuestion(currentQuestion + 1);
+    }
+}
 
-// Start test monitoring
-initializeTest(testDuration, testForm, submitUrl);
+function goToQuestion(questionNum) {
+    // Hide current question
+    document.getElementById(`question-${currentQuestion}`).style.display = 'none';
+    document.getElementById(`nav-${currentQuestion}`).classList.remove('current');
+    
+    // Show new question
+    currentQuestion = questionNum;
+    document.getElementById(`question-${currentQuestion}`).style.display = 'block';
+    document.getElementById(`nav-${currentQuestion}`).classList.add('current');
+    
+    // Mark as visited
+    visitedQuestions.add(currentQuestion);
+    
+    // Update navigator
+    updateNavigator();
+    updateSubmitButton();
+    
+    // Scroll to top
+    window.scrollTo(0, 0);
+}
+
+function markForReview(questionNum) {
+    if (markedQuestions.has(questionNum)) {
+        markedQuestions.delete(questionNum);
+    } else {
+        markedQuestions.add(questionNum);
+    }
+    updateNavigator();
+}
+
+function clearResponse(questionNum, questionId) {
+    document.querySelectorAll(`input[name="question_${questionId}"]`).forEach(radio => {
+        radio.checked = false;
+    });
+    updateNavigator();
+    updateSubmitButton();
+}
+
+function updateNavigator() {
+    for (let i = 1; i <= totalQuestions; i++) {
+        const navBtn = document.getElementById(`nav-${i}`);
+        const questionCard = document.getElementById(`question-${i}`);
+        const radios = questionCard.querySelectorAll('input[type="radio"]');
+        const isAnswered = Array.from(radios).some(radio => radio.checked);
+        
+        // Remove all status classes
+        navBtn.classList.remove('answered', 'not-answered', 'marked', 'not-visited');
+        
+        // Add appropriate class
+        if (markedQuestions.has(i)) {
+            navBtn.classList.add('marked');
+        } else if (isAnswered) {
+            navBtn.classList.add('answered');
+        } else if (visitedQuestions.has(i)) {
+            navBtn.classList.add('not-answered');
+        } else {
+            navBtn.classList.add('not-visited');
+        }
+    }
+}
+
+function updateSubmitButton() {
+    const submitBtn = document.getElementById('submitBtn');
+    // Enable submit only if all questions are visited
+    if (visitedQuestions.size === totalQuestions) {
+        submitBtn.disabled = false;
+    } else {
+        submitBtn.disabled = true;
+    }
+}
+
+function confirmSubmit() {
+    // Count answered questions
+    let answeredCount = 0;
+    for (let i = 1; i <= totalQuestions; i++) {
+        const questionCard = document.getElementById(`question-${i}`);
+        const radios = questionCard.querySelectorAll('input[type="radio"]');
+        const isAnswered = Array.from(radios).some(radio => radio.checked);
+        if (isAnswered) answeredCount++;
+    }
+    
+    const unanswered = totalQuestions - answeredCount;
+    let message = `Are you sure you want to submit the test?\n\n`;
+    message += `Total Questions: ${totalQuestions}\n`;
+    message += `Answered: ${answeredCount}\n`;
+    message += `Unanswered: ${unanswered}\n\n`;
+    message += `You cannot change answers after submission.`;
+    
+    if (confirm(message)) {
+        clearInterval(timerInterval);
+        document.getElementById('testForm').submit();
+    }
+}
+
+// Prevent page unload
+window.addEventListener('beforeunload', function(e) {
+    e.preventDefault();
+    e.returnValue = '';
+    return '';
+});
 </script>
 {% endblock %}

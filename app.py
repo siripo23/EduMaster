@@ -31,6 +31,16 @@ def load_user(user_id):
 def index():
     return render_template('index.html')
 
+@app.route('/css-test')
+def css_test():
+    """CSS diagnostic page"""
+    return render_template('css_test.html')
+
+@app.route('/color-test')
+def color_test():
+    """Simple color test page"""
+    return render_template('color_test.html')
+
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
     if request.method == 'POST':
@@ -183,14 +193,14 @@ def test_start(test_type):
         duration = 60  # minutes
     elif test_type == 'adaptive':
         total_questions = 30
-        duration = 90
+        duration = 30  # 30 minutes for adaptive test
     elif test_type == 'full_paper':
         if current_user.stream == 'NEET':
             total_questions = 180
-            duration = 180
+            duration = 180  # 3 hours for full paper
         else:  # JEE
             total_questions = 180
-            duration = 180
+            duration = 180  # 3 hours for full paper
     elif test_type.startswith('subject_'):
         total_questions = 30
         duration = 45
@@ -219,10 +229,10 @@ def take_test(test_type):
         duration = 60
     elif test_type == 'adaptive':
         questions = ai_engine.generate_adaptive_test(current_user, num_questions=30)
-        duration = 90
+        duration = 30  # 30 minutes for adaptive test
     elif test_type == 'full_paper':
         questions = ai_engine.generate_full_paper(current_user.stream)
-        duration = 180
+        duration = 180  # 3 hours for full paper
     elif test_type.startswith('subject_'):
         subject = test_type.replace('subject_', '').replace('_', ' ')
         questions = ai_engine.generate_subject_test(current_user.stream, subject)
@@ -397,6 +407,18 @@ def profile():
         test_history = TestAttempt.query.filter_by(user_id=current_user.id)\
                                       .order_by(TestAttempt.created_at.desc()).all()
         
+        # Prepare chart data for performance trends
+        chart_labels = []
+        chart_scores = []
+        
+        if test_history:
+            # Reverse to show oldest to newest in chart
+            for test in reversed(test_history):
+                chart_labels.append(test.created_at.strftime('%m-%d'))
+                max_score = test.total_questions * 4
+                percentage = round((test.score / max_score * 100) if max_score > 0 else 0, 1)
+                chart_scores.append(percentage)
+        
         # Debug logging
         print(f"Profile page - User: {current_user.name}, Tests: {len(test_history)}")
         for test in test_history:
@@ -404,7 +426,9 @@ def profile():
         
         return render_template('profile.html', 
                              user=current_user,
-                             test_history=test_history)
+                             test_history=test_history,
+                             chart_labels=chart_labels,
+                             chart_scores=chart_scores)
     except Exception as e:
         print(f"Error in profile route: {str(e)}")
         import traceback

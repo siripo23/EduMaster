@@ -7,7 +7,407 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v=4.0">
+    <style>
+        /* Oxford Blue Theme - OVERRIDE ALL - Highest Priority */
+        :root {
+            --oxford-blue: #002147 !important;
+            --oxford-light: #003d82 !important;
+            --oxford-lighter: #0056b3 !important;
+            --oxford-accent: #4a90e2 !important;
+            --oxford-dark: #001529 !important;
+            --bg-primary: #f0f4f8 !important;
+            --bg-secondary: #ffffff !important;
+            --text-primary: #1a1a1a !important;
+            --text-secondary: #4a5568 !important;
+            --success: #003d82 !important;
+--warning: #004a99 !important;
+--danger: #001a33 !important;
+            --border-color: #d1dce5 !important;
+            --border-radius: 12px !important;
+            --shadow-md: 0 4px 12px rgba(0, 33, 71, 0.1) !important;
+            --shadow-lg: 0 8px 24px rgba(0, 33, 71, 0.15) !important;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+            background: linear-gradient(135deg, #f0f4f8 0%, #e6eef5 100%) !important;
+            background-attachment: fixed !important;
+            color: #1a1a1a !important;
+        }
+        
+        /* Navbar - Oxford Blue - FORCE */
+        .navbar {
+            background: #002147 !important;
+            background-color: #002147 !important;
+            box-shadow: 0 4px 12px rgba(0, 33, 71, 0.1) !important;
+            padding: 1rem 0 !important;
+        }
+        
+        .navbar-brand {
+            color: white !important;
+            font-weight: 700 !important;
+            font-size: 1.5rem !important;
+        }
+        
+        .nav-link {
+            color: rgba(255, 255, 255, 0.9) !important;
+            font-weight: 500 !important;
+            padding: 0.5rem 1rem !important;
+            border-radius: 8px !important;
+            transition: all 0.3s ease !important;
+        }
+        
+        .nav-link:hover {
+            background: rgba(255, 255, 255, 0.1) !important;
+            color: white !important;
+        }
+        
+        .logout-btn {
+            background: #003d82 !important;
+            color: white !important;
+            margin-left: 0.5rem !important;
+        }
+        
+        .logout-btn:hover {
+            background: #0056b3 !important;
+        }
+        
+        /* Cards */
+        .card {
+            background: white !important;
+            border: 1px solid #d1dce5 !important;
+            border-radius: 12px !important;
+            box-shadow: 0 4px 12px rgba(0, 33, 71, 0.1) !important;
+        }
+        
+        .card-header {
+            background: #002147 !important;
+            background-color: #002147 !important;
+            color: white !important;
+            border-bottom: none !important;
+            padding: 1.25rem 1.5rem !important;
+            border-radius: 12px 12px 0 0 !important;
+            font-weight: 600 !important;
+        }
+        
+        /* Buttons */
+        .btn-primary {
+            background: #002147 !important;
+            background-color: #002147 !important;
+            border: none !important;
+            border-color: #002147 !important;
+            color: white !important;
+            padding: 0.6rem 1.5rem !important;
+            font-weight: 600 !important;
+            border-radius: 8px !important;
+        }
+        
+        .btn-primary:hover {
+            background: #003d82 !important;
+            background-color: #003d82 !important;
+            border-color: #003d82 !important;
+        }
+        
+        .btn-secondary {
+            background: #0056b3 !important;
+            background-color: #0056b3 !important;
+            border: none !important;
+            border-color: #0056b3 !important;
+            color: white !important;
+        }
+        
+        .btn-secondary:hover {
+            background: #4a90e2 !important;
+            background-color: #4a90e2 !important;
+            border-color: #4a90e2 !important;
+        }
+        
+        .main-content {
+            padding-top: 80px !important;
+            min-height: 100vh !important;
+        }
+        
+        .alert-custom {
+            background: #e6eef5 !important;
+            color: #002147 !important;
+            border-left: 4px solid #4a90e2 !important;
+        }
+        
+        /* Dashboard & Page Specific Styles */
+        .welcome-section {
+            background: linear-gradient(135deg, #002147 0%, #003d82 100%) !important;
+            color: white !important;
+        }
+        
+        .stat-card {
+            background: white !important;
+            border: 1px solid #d1dce5 !important;
+        }
+        
+        .action-card {
+            background: white !important;
+            border: 1px solid #d1dce5 !important;
+        }
+        
+        .action-card:hover {
+            border-color: #002147 !important;
+        }
+        
+        .subject-test-card {
+            background: white !important;
+            border: 1px solid #d1dce5 !important;
+        }
+        
+        .subject-test-card:hover {
+            border-color: #002147 !important;
+        }
+        
+        /* Action Icons */
+        .action-icon {
+            background: linear-gradient(135deg, #002147 0%, #003d82 100%) !important;
+            color: white !important;
+        }
+        
+        .subject-icon {
+            background: linear-gradient(135deg, #002147 0%, #003d82 100%) !important;
+            color: white !important;
+        }
+        
+        /* Hero Section */
+        .hero-section {
+            background: linear-gradient(135deg, #002147 0%, #003d82 100%) !important;
+        }
+        
+        /* Feature Cards */
+        .feature-icon {
+            background: linear-gradient(135deg, #002147 0%, #003d82 100%) !important;
+            color: white !important;
+        }
+        
+        /* Test Interface */
+        .test-header {
+            background: linear-gradient(135deg, #002147 0%, #003d82 100%) !important;
+            color: white !important;
+        }
+        
+        .question-header {
+            border-bottom: 2px solid #002147 !important;
+        }
+        
+        .question-number {
+            color: #002147 !important;
+        }
+        
+        .question-subject {
+            background: #002147 !important;
+            color: white !important;
+        }
+        
+        /* Navigator */
+        .navigator-panel {
+            background: white !important;
+            border-left: 2px solid #d1dce5 !important;
+        }
+        
+        .navigator-title {
+            color: #002147 !important;
+        }
+        
+        .question-btn.current {
+            border: 3px solid #002147 !important;
+        }
+        
+        /* Auth Pages */
+        .auth-header {
+            background: linear-gradient(135deg, #002147 0%, #003d82 100%) !important;
+            color: white !important;
+        }
+        
+        .auth-card {
+            background: white !important;
+            border: 1px solid #d1dce5 !important;
+        }
+        
+        /* Resources Page */
+        .resource-header {
+            background: linear-gradient(135deg, #002147 0%, #003d82 100%) !important;
+            color: white !important;
+        }
+        
+        .resource-card {
+            background: white !important;
+            border: 1px solid #d1dce5 !important;
+        }
+        
+        /* Profile Page */
+        .profile-header {
+            background: linear-gradient(135deg, #002147 0%, #003d82 100%) !important;
+            color: white !important;
+        }
+        
+        /* Links */
+        a.text-primary {
+            color: #002147 !important;
+        }
+        
+        a.text-primary:hover {
+            color: #003d82 !important;
+        }
+        
+        /* Badges */
+        .badge-primary {
+            background: #002147 !important;
+            color: white !important;
+        }
+        
+        /* Progress Bars */
+        .progress-bar {
+            background: #002147 !important;
+        }
+        
+        /* Tables */
+        .table-primary {
+            background: #002147 !important;
+            color: white !important;
+        }
+        
+        /* Borders */
+        .border-primary {
+            border-color: #002147 !important;
+        }
+        
+        /* Text Colors */
+        .text-primary {
+            color: #002147 !important;
+        }
+        
+        /* Background Colors */
+        .bg-primary {
+            background: #002147 !important;
+            background-color: #002147 !important;
+            color: white !important;
+        }
+        
+        /* Gradients */
+       .gradient-text {
+    background: linear-gradient(135deg, #002147 0%, #0056b3 100%) !important;
+            -webkit-background-clip: text !important;
+            -webkit-text-fill-color: transparent !important;
+            background-clip: text !important;
+        }
+        
+        /* Level Badge */
+        .level-badge {
+            background: rgba(255, 255, 255, 0.15) !important;
+            border: 1px solid rgba(255, 255, 255, 0.2) !important;
+        }
+        
+        /* Stat Icons */
+        .stat-icon {
+            border-radius: 12px !important;
+        }
+        
+        .level-icon-bg {
+            background: linear-gradient(135deg, #002147 0%, #003d82 100%) !important;
+        }
+        
+        .tests-icon-bg {
+            background: linear-gradient(135deg, #003d82 0%, #0056b3 100%) !important;
+        }
+        
+        .score-icon-bg {
+    background: linear-gradient(135deg, #002147 0%, #0056b3 100%) !important;
+}
+        
+        /* CTA Section */
+        .cta-section {
+            background: linear-gradient(135deg, #002147 0%, #003d82 100%) !important;
+            color: white !important;
+        }
+        
+        /* Initial Test CTA */
+        .initial-test-cta {
+            background: linear-gradient(135deg, #002147 0%, #003d82 100%) !important;
+            color: white !important;
+        }
+        
+        /* Section Titles */
+        .section-title {
+            color: #002147 !important;
+        }
+        
+        /* Content Cards */
+        .content-card {
+            background: white !important;
+            border: 1px solid #d1dce5 !important;
+        }
+        
+        .content-card .card-header {
+            background: #f0f4f8 !important;
+            color: #002147 !important;
+            border-bottom: 1px solid #d1dce5 !important;
+        }
+        
+        /* Tips Card */
+        .tip-of-day {
+    background: linear-gradient(135deg, #002147 0%, #003d82 100%) !important;
+}
+        /* Test Results */
+        .result-card {
+            background: white !important;
+            border: 1px solid #d1dce5 !important;
+        }
+        
+        .result-header {
+            background: linear-gradient(135deg, #002147 0%, #003d82 100%) !important;
+            color: white !important;
+        }
+        
+        /* Forms */
+        .form-control:focus {
+            border-color: #002147 !important;
+            box-shadow: 0 0 0 0.2rem rgba(0, 33, 71, 0.25) !important;
+        }
+        
+        .form-check-input:checked {
+            background-color: #002147 !important;
+            border-color: #002147 !important;
+        }
+        
+        /* Dropdown */
+        .dropdown-item:hover {
+            background-color: #f0f4f8 !important;
+            color: #002147 !important;
+        }
+        
+        /* Pagination */
+        .page-link {
+            color: #002147 !important;
+        }
+        
+        .page-item.active .page-link {
+            background-color: #002147 !important;
+            border-color: #002147 !important;
+        }
+        
+        /* Modal */
+        .modal-header {
+            background: linear-gradient(135deg, #002147 0%, #003d82 100%) !important;
+            color: white !important;
+        }
+        
+        /* Tooltips */
+        .tooltip-inner {
+            background-color: #002147 !important;
+        }
+        
+        /* Popovers */
+        .popover-header {
+            background-color: #002147 !important;
+            color: white !important;
+        }
+    </style>
 </head>
 <body>
     {% if session.user_id %}

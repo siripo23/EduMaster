@@ -11,7 +11,7 @@
                 <div class="col-lg-8">
                     <div class="welcome-content">
                         <h1 class="welcome-title">
-                            Welcome back, <span class="gradient-text">{{ user.name }}</span>! 
+                            Welcome back, {{ user.name }}
                             <i class="fas fa-hand-wave ms-2"></i>
                         </h1>
                         <p class="welcome-subtitle">
@@ -354,7 +354,7 @@
 
 /* Welcome Section */
 .welcome-section {
-    background: linear-gradient(135deg, #a8c0ff 0%, #c5a3ff 100%);
+    background: linear-gradient(135deg, #002147 0%, #003d82 100%);
     color: white;
     padding: 2.5rem 0;
     margin-bottom: 2rem;
@@ -385,10 +385,11 @@
 }
 
 .gradient-text {
-    background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+    background: linear-gradient(135deg, #66b2ff 0%, #ffffff 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+    font-weight: 800;
 }
 
 .welcome-subtitle {
@@ -411,7 +412,7 @@
 .level-badge .level-icon {
     font-size: 2rem;
     margin-bottom: 0.5rem;
-    color: #fbbf24;
+    color: #ffffff;
 }
 
 .level-text {
@@ -463,9 +464,9 @@
     flex-shrink: 0;
 }
 
-.level-icon-bg { background: linear-gradient(135deg, #a8c0ff 0%, #c5a3ff 100%); }
-.tests-icon-bg { background: linear-gradient(135deg, #a8edea 0%, #d4f1f4 100%); }
-.score-icon-bg { background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%); }
+.level-icon-bg { background: linear-gradient(135deg, #002147 0%, #003d82 100%); }
+.tests-icon-bg { background: linear-gradient(135deg, #003d82 0%, #0056b3 100%); }
+.score-icon-bg { background: linear-gradient(135deg, #002147 0%, #0056b3 100%); }
 
 .stat-number {
     font-size: 1.75rem;
@@ -489,7 +490,7 @@
 
 /* Initial Test CTA */
 .initial-test-cta {
-    background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%);
+    background: linear-gradient(135deg, #002147 0%, #003d82 100%);
     border-radius: var(--border-radius);
     padding: 2rem;
     margin-bottom: 2rem;
@@ -592,9 +593,9 @@
     height: 4px;
 }
 
-.adaptive-card::before { background: var(--primary-gradient); }
-.resources-card::before { background: var(--success-gradient); }
-.performance-card::before { background: var(--warning-gradient); }
+.adaptive-card .action-icon { background: linear-gradient(135deg, #002147 0%, #003d82 100%); }
+.resources-card .action-icon { background: linear-gradient(135deg, #003d82 0%, #0056b3 100%); }
+.performance-card .action-icon { background: linear-gradient(135deg, #002147 0%, #0056b3 100%); }
 
 .action-card:hover {
     transform: translateY(-2px);
@@ -613,9 +614,10 @@
     margin-bottom: 1rem;
 }
 
-.adaptive-card .action-icon { background: linear-gradient(135deg, #a8c0ff 0%, #c5a3ff 100%); }
-.resources-card .action-icon { background: linear-gradient(135deg, #a8edea 0%, #d4f1f4 100%); }
-.performance-card .action-icon { background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%); }
+.physics-card::before { background: #002147; }
+.chemistry-card::before { background: #002147; }
+.biology-card::before { background: #002147; }
+.maths-card::before { background: #002147; }
 
 .action-content h4 {
     font-size: 1.15rem;
@@ -948,7 +950,7 @@
 }
 
 .schedule-list li i {
-    color: #10b981;
+    color: #002147;
     margin-right: 0.5rem;
 }
 
